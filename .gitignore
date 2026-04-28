@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Environment
+.env
+.env.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Data — DO NOT commit raw images or PDFs
+data/raw/
+data/uploads/
+*.pdf
+
+# Models / weights
+*.bin
+*.safetensors
+*.gguf
+
+# Build artifacts
+dist/
+build/
+*.egg
+
+# Logs
+*.log
+logs/
+
+# Frontend
+frontend/static/dist/
+node_modules/
