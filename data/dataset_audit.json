@@ -1,0 +1,190 @@
+{
+  "schema_version": "1",
+  "generated_at": "2026-04-28T10:24:20Z",
+  "thresholds": {
+    "per_condition_min": 20,
+    "ood_min_for_recall": 50
+  },
+  "datasets": {
+    "fitzpatrick17k": {
+      "license": "CC BY-NC-SA 4.0",
+      "source_url": "https://raw.githubusercontent.com/mattgroh/fitzpatrick17k/main/fitzpatrick17k.csv",
+      "total_samples": 16577,
+      "by_condition": {
+        "other_ood": 13544,
+        "psoriasis": 706,
+        "contact_dermatitis": 693,
+        "other_ood_dangerous": 490,
+        "acne": 518,
+        "eczema": 287,
+        "scabies": 339
+      },
+      "by_condition_and_skin_tone": {
+        "other_ood": {
+          "3": 2783,
+          "1": 2332,
+          "2": 3757,
+          "6": 541,
+          "4": 2361,
+          "-1": 459,
+          "5": 1311
+        },
+        "psoriasis": {
+          "1": 129,
+          "2": 250,
+          "3": 106,
+          "4": 98,
+          "-1": 32,
+          "5": 67,
+          "6": 24
+        },
+        "contact_dermatitis": {
+          "3": 133,
+          "1": 167,
+          "4": 114,
+          "2": 230,
+          "-1": 12,
+          "6": 14,
+          "5": 23
+        },
+        "other_ood_dangerous": {
+          "2": 171,
+          "6": 14,
+          "3": 80,
+          "1": 119,
+          "4": 52,
+          "5": 29,
+          "-1": 25
+        },
+        "acne": {
+          "4": 61,
+          "1": 123,
+          "2": 209,
+          "6": 7,
+          "3": 83,
+          "5": 33,
+          "-1": 2
+        },
+        "eczema": {
+          "1": 47,
+          "2": 118,
+          "3": 50,
+          "5": 15,
+          "6": 17,
+          "-1": 7,
+          "4": 33
+        },
+        "scabies": {
+          "3": 73,
+          "-1": 28,
+          "1": 30,
+          "2": 73,
+          "4": 62,
+          "5": 55,
+          "6": 18
+        }
+      },
+      "skin_tone_distribution": {
+        "3": 3308,
+        "1": 2947,
+        "2": 4808,
+        "6": 635,
+        "4": 2781,
+        "-1": 565,
+        "5": 1533
+      },
+      "unmapped_top_labels": {
+        "squamous cell carcinoma": 581,
+        "lichen planus": 491,
+        "basal cell carcinoma": 468,
+        "lupus erythematosus": 410,
+        "neutrophilic dermatoses": 361,
+        "sarcoidosis": 349,
+        "photodermatoses": 348,
+        "folliculitis": 342,
+        "scleroderma": 309,
+        "pityriasis rubra pilaris": 278,
+        "nematode infection": 260,
+        "erythema multiforme": 236,
+        "granuloma annulare": 211,
+        "drug eruption": 200,
+        "pityriasis rosea": 193,
+        "neurofibromatosis": 189,
+        "porokeratosis actinic": 183,
+        "mycosis fungoides": 182,
+        "actinic keratosis": 175,
+        "hailey hailey disease": 174
+      }
+    },
+    "ham10000": {
+      "license": "CC BY-NC",
+      "source_url": "https://dataverse.harvard.edu/api/access/datafile/3172582",
+      "total_samples": 10015,
+      "raw_dx_codes": {
+        "bkl": 1099,
+        "nv": 6705,
+        "df": 115,
+        "mel": 1113,
+        "vasc": 142,
+        "bcc": 514,
+        "akiec": 327
+      },
+      "by_condition": {
+        "other_ood": 8061,
+        "other_ood_dangerous": 1954
+      }
+    },
+    "isic_archive": {
+      "license": "Mixed (mostly CC-0/CC-BY)",
+      "source_url": "https://api.isic-archive.com",
+      "total_samples": 552598,
+      "note": "Counted via API. Detailed per-diagnosis filtering deferred to TIP-012."
+    },
+    "pad_ufes_20": {
+      "license": "CC BY 4.0",
+      "source_url": "https://data.mendeley.com/datasets/zr7vgbcyr2/1",
+      "total_samples": null,
+      "note": "PAD-UFES-20 not fetched programmatically. Manual download required from https://data.mendeley.com/datasets/zr7vgbcyr2/1 — defer to TIP-012."
+    }
+  },
+  "summary": {
+    "in_scope_total": {
+      "atopic_dermatitis": 0,
+      "fungal_infection": 0,
+      "herpes_zoster": 0,
+      "acne": 518,
+      "contact_dermatitis": 693,
+      "eczema": 287,
+      "psoriasis": 706,
+      "scabies": 339
+    },
+    "ood_total": 24049,
+    "ood_dangerous_total": 2444
+  },
+  "gaps": [
+    {
+      "condition": "atopic_dermatitis",
+      "available": 0,
+      "threshold": 20,
+      "recommendation": "Augment from DermNet NZ (per-image license) or drop from MVP scope. Escalation to Chủ thầu."
+    },
+    {
+      "condition": "fungal_infection",
+      "available": 0,
+      "threshold": 20,
+      "recommendation": "Augment from DermNet NZ (per-image license) or drop from MVP scope. Escalation to Chủ thầu."
+    },
+    {
+      "condition": "herpes_zoster",
+      "available": 0,
+      "threshold": 20,
+      "recommendation": "Augment from DermNet NZ (per-image license) or drop from MVP scope. Escalation to Chủ thầu."
+    }
+  ],
+  "fitzpatrick_skew": {
+    "iii_iv_v_total": 7622,
+    "iii_iv_v_pct": 45.98,
+    "target_pct": 30.0,
+    "meets_target": true
+  }
+}
