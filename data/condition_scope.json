@@ -1,0 +1,36 @@
+{
+  "version": "v2",
+  "decision_date": "2026-04-28T11:15:10Z",
+  "rule": "Drop condition if total samples < 20 after augmenting with DermNet NZ + SCIN (TIP-001A, augment-then-drop policy).",
+  "in_scope": [
+    "atopic_dermatitis",
+    "fungal_infection",
+    "herpes_zoster",
+    "acne",
+    "contact_dermatitis",
+    "eczema",
+    "psoriasis",
+    "scabies"
+  ],
+  "dropped": [],
+  "rationale_per_condition": {
+    "atopic_dermatitis": "KEPT — 35 samples available across datasets.",
+    "fungal_infection": "KEPT — 223 samples available across datasets.",
+    "herpes_zoster": "KEPT — 89 samples available across datasets.",
+    "acne": "KEPT — 607 samples available across datasets.",
+    "contact_dermatitis": "KEPT — 1132 samples available across datasets.",
+    "eczema": "KEPT — 781 samples available across datasets.",
+    "psoriasis": "KEPT — 841 samples available across datasets.",
+    "scabies": "KEPT — 373 samples available across datasets."
+  },
+  "samples_per_condition": {
+    "atopic_dermatitis": 35,
+    "fungal_infection": 223,
+    "herpes_zoster": 89,
+    "acne": 607,
+    "contact_dermatitis": 1132,
+    "eczema": 781,
+    "psoriasis": 841,
+    "scabies": 373
+  }
+}

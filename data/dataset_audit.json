@@ -145,10 +145,164 @@
       "source_url": "https://data.mendeley.com/datasets/zr7vgbcyr2/1",
       "total_samples": null,
       "note": "PAD-UFES-20 not fetched programmatically. Manual download required from https://data.mendeley.com/datasets/zr7vgbcyr2/1 — defer to TIP-012."
+    },
+    "scin": {
+      "license": "CC BY 4.0",
+      "source_url": "https://storage.googleapis.com/dx-scin-public-data/dataset/scin_labels.csv",
+      "schema_columns": [
+        "case_id",
+        "dermatologist_gradable_for_skin_condition_1",
+        "dermatologist_gradable_for_skin_condition_2",
+        "dermatologist_gradable_for_skin_condition_3",
+        "dermatologist_skin_condition_on_label_name",
+        "dermatologist_skin_condition_confidence",
+        "weighted_skin_condition_label",
+        "dermatologist_gradable_for_fitzpatrick_skin_type_1",
+        "dermatologist_gradable_for_fitzpatrick_skin_type_2",
+        "dermatologist_gradable_for_fitzpatrick_skin_type_3",
+        "dermatologist_fitzpatrick_skin_type_label_1",
+        "dermatologist_fitzpatrick_skin_type_label_2",
+        "dermatologist_fitzpatrick_skin_type_label_3",
+        "gradable_for_monk_skin_tone_india",
+        "gradable_for_monk_skin_tone_us",
+        "monk_skin_tone_label_india",
+        "monk_skin_tone_label_us"
+      ],
+      "label_column_used": "dermatologist_skin_condition_on_label_name",
+      "total_samples": 5033,
+      "empty_label_cases": 1972,
+      "multi_label_cases": 2391,
+      "by_condition": {
+        "other_ood": 1576,
+        "contact_dermatitis": 439,
+        "psoriasis": 135,
+        "fungal_infection": 190,
+        "eczema": 494,
+        "other_ood_dangerous": 21,
+        "herpes_zoster": 83,
+        "acne": 89,
+        "scabies": 34
+      },
+      "mapping_note": "Each case has up to 3 dermatologist-assigned weighted labels; we count under the first/most-weighted label only to avoid double-counting. multi_label_cases reports how many cases had >1 label."
+    },
+    "dermnet_nz": {
+      "license": "Per-image (CC BY-NC-ND-style); not redistributed",
+      "source_url": "https://dermnetnz.org",
+      "by_condition": {
+        "atopic_dermatitis": 35,
+        "fungal_infection": 33,
+        "herpes_zoster": 6
+      },
+      "image_urls_per_condition": {
+        "atopic_dermatitis": [
+          "https://dermnetnz.org/assets/Uploads/SCORAD/atopic-dryness-3.jpg",
+          "https://dermnetnz.org/assets/Uploads/SCORAD/atopic-excoriation-2.jpg",
+          "https://dermnetnz.org/assets/Uploads/SCORAD/atopic-oozy-1.jpg",
+          "https://dermnetnz.org/assets/Uploads/SCORAD/atopic-oozy-2.jpg",
+          "https://dermnetnz.org/assets/Uploads/SCORAD/atopic-red-0.jpg",
+          "https://dermnetnz.org/assets/Uploads/atopic-100.jpg",
+          "https://dermnetnz.org/assets/Uploads/atopic-dermatitis-1.jpg",
+          "https://dermnetnz.org/assets/Uploads/atopic-eczema-01.jpg",
+          "https://dermnetnz.org/assets/Uploads/atopic-eczema-02.jpg",
+          "https://dermnetnz.org/assets/Uploads/atopic-eczema-black-skin.jpg",
+          "https://dermnetnz.org/assets/Uploads/dermatitis/at-derm1.jpg",
+          "https://dermnetnz.org/assets/Uploads/dermatitis/at-derm7.jpg",
+          "https://dermnetnz.org/assets/Uploads/dermatitis/at-mol.jpg",
+          "https://dermnetnz.org/assets/Uploads/dermatitis/atopic1.jpg",
+          "https://dermnetnz.org/assets/Uploads/dermatitis/atopic2.jpg",
+          "https://dermnetnz.org/assets/Uploads/dermatitis/atopic3.jpg",
+          "https://dermnetnz.org/assets/Uploads/dermatitis/atopic32.jpg",
+          "https://dermnetnz.org/assets/Uploads/dermatitis/atopic44.jpg",
+          "https://dermnetnz.org/assets/Uploads/dermatitis/flexural-eczema22.jpg",
+          "https://dermnetnz.org/assets/Uploads/dermatitis/flexural-eczema27.jpg",
+          "https://dermnetnz.org/assets/Uploads/dermatitis/s/atopic26.jpg",
+          "https://dermnetnz.org/assets/Uploads/dermatitis/s/atopic30.jpg",
+          "https://dermnetnz.org/assets/Uploads/dermatitis/s/eapsimplex1.jpg",
+          "https://dermnetnz.org/assets/Uploads/dermatitis/scorad1.jpg",
+          "https://dermnetnz.org/assets/Uploads/doctors/dermatitis/images/ecz-atopic19.jpg",
+          "https://dermnetnz.org/assets/Uploads/doctors/dermatitis/images/ecz-lich8.jpg",
+          "https://dermnetnz.org/assets/Uploads/madarosis-13.jpg",
+          "https://dermnetnz.org/assets/Uploads/nipple-eczema-08.jpg",
+          "https://dermnetnz.org/assets/Uploads/prurigo-01.jpg",
+          "https://dermnetnz.org/assets/Uploads/site-age-specific/s/cheilatop2.jpg",
+          "https://dermnetnz.org/assets/Uploads/site-age-specific/s/eyelid-24.jpg",
+          "https://dermnetnz.org/assets/Uploads/systemic/w/itchy-skin-41.jpg",
+          "https://dermnetnz.org/assets/Uploads/viral/eczema-herpticum09.jpg",
+          "https://dermnetnz.org/assets/collection-O/Atopic-dermatitis-skin-of-colour/atopic-dermatitis-skin-of-colour-00019.jpg",
+          "https://dermnetnz.org/assets/collection-O/Atopic-dermatitis-skin-of-colour/atopic-dermatitis-skin-of-colour-00020.jpg"
+        ],
+        "fungal_infection": [
+          "https://dermnetnz.org/assets/Non-clinical-images/mycology-culture-plate.jpg",
+          "https://dermnetnz.org/assets/Uploads/Trubrum-front-back-together.jpg",
+          "https://dermnetnz.org/assets/Uploads/bacterial/erythrasma12.jpg",
+          "https://dermnetnz.org/assets/Uploads/doctors/fungal-infections/images/t-cruris2.jpg",
+          "https://dermnetnz.org/assets/Uploads/fungal/kerion09.jpg",
+          "https://dermnetnz.org/assets/Uploads/fungal/majocchi14.jpg",
+          "https://dermnetnz.org/assets/Uploads/fungal/s/tincorp8.jpg",
+          "https://dermnetnz.org/assets/Uploads/fungal/s/tincorp9-v2.jpg",
+          "https://dermnetnz.org/assets/Uploads/fungal/s/tineacrur3.jpg",
+          "https://dermnetnz.org/assets/Uploads/fungal/s/tinped1.jpg",
+          "https://dermnetnz.org/assets/Uploads/fungal/s/tinped2.jpg",
+          "https://dermnetnz.org/assets/Uploads/fungal/s/tinped3.jpg",
+          "https://dermnetnz.org/assets/Uploads/fungal/s/tinped4.jpg",
+          "https://dermnetnz.org/assets/Uploads/fungal/tccru.jpg",
+          "https://dermnetnz.org/assets/Uploads/fungal/tiimsu.jpg",
+          "https://dermnetnz.org/assets/Uploads/fungal/tincorp15.jpg",
+          "https://dermnetnz.org/assets/Uploads/fungal/tincorp16.jpg",
+          "https://dermnetnz.org/assets/Uploads/fungal/tincorp18.jpg",
+          "https://dermnetnz.org/assets/Uploads/fungal/tpsev.jpg",
+          "https://dermnetnz.org/assets/Uploads/fungal/tpto.jpg",
+          "https://dermnetnz.org/assets/Uploads/hair-nails-sweat/lat-om2.jpg",
+          "https://dermnetnz.org/assets/Uploads/pathology/e/tinea-unguium-figure-2.jpg",
+          "https://dermnetnz.org/assets/Uploads/scaly/flexural-psoriasis9-s.jpg",
+          "https://dermnetnz.org/assets/Uploads/tin-ung1-v2.jpg",
+          "https://dermnetnz.org/assets/collection-O/Hailey-Hailey-disease/benign-familial-pemphigus-00029.jpg",
+          "https://dermnetnz.org/assets/collection-O/Tinea/tinea-cruris-0001.jpg",
+          "https://dermnetnz.org/assets/collection-O/Tinea/tinea-cruris-0002.jpg",
+          "https://dermnetnz.org/assets/collection/Onychomycosis/onychomycosis-0001.jpg",
+          "https://dermnetnz.org/assets/collection/Onychomycosis/onychomycosis-0004.jpg",
+          "https://dermnetnz.org/assets/collection/Onychomycosis/onychomycosis-0034.jpg",
+          "https://dermnetnz.org/assets/collection/Onychomycosis/onychomycosis-0037.jpg",
+          "https://dermnetnz.org/assets/collection/Tinea-corporis/tinea-corporis-00019.jpg",
+          "https://dermnetnz.org/assets/manualthumbnails/fungal/img/s/tineacrur2.jpg"
+        ],
+        "herpes_zoster": [
+          "https://dermnetnz.org/assets/Uploads/doctors/viral-infections/images/hvz2.jpg",
+          "https://dermnetnz.org/assets/Uploads/viral/s/hz2.jpg",
+          "https://dermnetnz.org/assets/Uploads/viral/zoster-12.jpg",
+          "https://dermnetnz.org/assets/Uploads/viral/zoster-13.jpg",
+          "https://dermnetnz.org/assets/Uploads/viral/zoster-14.jpg",
+          "https://dermnetnz.org/assets/Uploads/viral/zoster3.jpg"
+        ]
+      },
+      "topic_status": {
+        "https://dermnetnz.org/topics/atopic-dermatitis": "OK (35 images)",
+        "https://dermnetnz.org/topics/tinea-corporis": "OK (9 images)",
+        "https://dermnetnz.org/topics/tinea-pedis": "OK (6 images)",
+        "https://dermnetnz.org/topics/tinea-cruris": "OK (9 images)",
+        "https://dermnetnz.org/topics/fungal-nail-infections": "OK (9 images)",
+        "https://dermnetnz.org/topics/chronic-mucocutaneous-candidiasis": "OK (0 images)",
+        "https://dermnetnz.org/topics/herpes-zoster": "OK (6 images)"
+      },
+      "scrape_date": "2026-04-28T11:15:10Z",
+      "user_agent": "DermAssist-VN-Research/0.1 (Apache-2.0 reference impl; non-commercial, dataset audit only)",
+      "license_note": "Image URLs are recorded for non-commercial research/eval reference. Image bytes are © DermNet NZ and are NOT redistributed. See docs/dermnet_attribution.md."
     }
   },
   "summary": {
     "in_scope_total": {
+      "atopic_dermatitis": 35,
+      "fungal_infection": 223,
+      "herpes_zoster": 89,
+      "acne": 607,
+      "contact_dermatitis": 1132,
+      "eczema": 781,
+      "psoriasis": 841,
+      "scabies": 373
+    },
+    "ood_total": 24049,
+    "ood_dangerous_total": 2444,
+    "in_scope_total_v1": {
       "atopic_dermatitis": 0,
       "fungal_infection": 0,
       "herpes_zoster": 0,
@@ -157,34 +311,15 @@
       "eczema": 287,
       "psoriasis": 706,
       "scabies": 339
-    },
-    "ood_total": 24049,
-    "ood_dangerous_total": 2444
-  },
-  "gaps": [
-    {
-      "condition": "atopic_dermatitis",
-      "available": 0,
-      "threshold": 20,
-      "recommendation": "Augment from DermNet NZ (per-image license) or drop from MVP scope. Escalation to Chủ thầu."
-    },
-    {
-      "condition": "fungal_infection",
-      "available": 0,
-      "threshold": 20,
-      "recommendation": "Augment from DermNet NZ (per-image license) or drop from MVP scope. Escalation to Chủ thầu."
-    },
-    {
-      "condition": "herpes_zoster",
-      "available": 0,
-      "threshold": 20,
-      "recommendation": "Augment from DermNet NZ (per-image license) or drop from MVP scope. Escalation to Chủ thầu."
     }
-  ],
+  },
+  "gaps": [],
   "fitzpatrick_skew": {
     "iii_iv_v_total": 7622,
     "iii_iv_v_pct": 45.98,
     "target_pct": 30.0,
     "meets_target": true
-  }
+  },
+  "version": "v2",
+  "augmented_at": "2026-04-28T11:15:10Z"
 }
