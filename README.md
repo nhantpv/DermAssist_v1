@@ -15,7 +15,7 @@ demo for Vietnamese dermatology. It assists doctors with differential
 diagnosis suggestions for **8 common conditions**, plus an out-of-distribution
 escape valve for anything outside scope.
 
-See [BLUEPRINT.md §1](../user_data/BLUEPRINT.md) for full project framing.
+See [BLUEPRINT.md §1](docs/BLUEPRINT.md) for full project framing.
 
 ## ⚠️ NOT FOR CLINICAL USE
 
@@ -98,7 +98,7 @@ pytest --cov=backend         # with coverage
 
 ## Architecture
 
-See [BLUEPRINT.md §2](../user_data/BLUEPRINT.md) for the full diagram.
+See [BLUEPRINT.md §2](docs/BLUEPRINT.md) for the full diagram.
 At a glance:
 
 ```
@@ -116,7 +116,7 @@ FastAPI (Modal serverless GPU)
 
 ## Project structure
 
-See [BLUEPRINT.md §4](../user_data/BLUEPRINT.md) for the full layout.
+See [BLUEPRINT.md §4](docs/BLUEPRINT.md) for the full layout.
 
 ```
 vlm-dermatology/
@@ -150,3 +150,27 @@ Apache License 2.0 — see [LICENSE](LICENSE).
   note   = {Apache 2.0. Demo / portfolio / thesis reference implementation.}
 }
 ```
+
+This project uses public dermatology datasets:
+
+```bibtex
+@inproceedings{groh2021evaluating,
+  author    = {Matthew Groh and Caleb Harris and Luis Soenksen and ...},
+  title     = {Evaluating Deep Neural Networks Trained on Clinical Images
+               in Dermatology with the Fitzpatrick 17k Dataset},
+  booktitle = {CVPR Workshop},
+  year      = {2021}
+}
+
+@article{ward2024scin,
+  title   = {SCIN: A Crowdsourced Dataset of Diverse Skin Conditions
+             Annotated by Dermatologists},
+  author  = {Ward, Abbi and ...},
+  journal = {Google Health},
+  year    = {2024},
+  url     = {https://github.com/google-research-datasets/scin}
+}
+```
+
+DermNet NZ image URLs are referenced for non-commercial research only;
+images are not redistributed (see `docs/dermnet_attribution.md`).
