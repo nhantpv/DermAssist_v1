@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bg-white border border-gray-200 rounded-lg p-6">
+    <h1 class="text-xl font-semibold mb-4">Lịch sử encounter</h1>
+
+    {% if records %}
+    <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+            <thead class="text-left text-xs uppercase tracking-wide text-gray-500 border-b border-gray-200">
+                <tr>
+                    <th class="py-2 pr-4">Thời gian</th>
+                    <th class="py-2 pr-4">Chẩn đoán chính</th>
+                    <th class="py-2 pr-4">Độ tin cậy</th>
+                    <th class="py-2 pr-4">Tier xử trí</th>
+                    <th class="py-2"></th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for r in records %}
+                <tr>
+                    <td class="py-2 pr-4 text-gray-700">{{ r.created_at }}</td>
+                    <td class="py-2 pr-4 font-medium">{{ r.diagnosis.primary_diagnosis | default('—') }}</td>
+                    <td class="py-2 pr-4 text-gray-700">
+                        {% if r.diagnosis.confidence is defined and r.diagnosis.confidence is not none %}
+                            {{ '%.0f'|format(r.diagnosis.confidence * 100) }}%
+                        {% else %}—{% endif %}
+                    </td>
+                    <td class="py-2 pr-4 text-gray-700">{{ r.diagnosis.management_tier | default('—') }}</td>
+                    <td class="py-2">
+                        <a href="/result/{{ r.id }}" class="text-blue-600 hover:underline">Xem</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="text-sm text-gray-600">Chưa có encounter nào. Bắt đầu với <a href="/upload" class="text-blue-600 hover:underline">/upload</a>.</p>
+    {% endif %}
+</div>
+{% endblock %}

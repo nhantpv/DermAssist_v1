@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% set d = record.diagnosis %}
+{% set tier = d.management_tier | default('') %}
+{% set tier_classes = {
+    'home_care':       'bg-green-50  border-green-300  text-green-800',
+    'outpatient_72h':  'bg-yellow-50 border-yellow-300 text-yellow-800',
+    'outpatient_24h':  'bg-orange-50 border-orange-300 text-orange-800',
+    'emergency':       'bg-red-50    border-red-400    text-red-800',
+} %}
+{% set tier_class = tier_classes.get(tier, 'bg-gray-50 border-gray-300 text-gray-800') %}
+{% set tier_labels = {
+    'home_care': 'Tự chăm sóc tại nhà',
+    'outpatient_72h': 'Khám trong 3 ngày',
+    'outpatient_24h': 'Khám trong 24 giờ',
+    'emergency': 'Cấp cứu ngay',
+} %}
+
+{% block content %}
+<div class="space-y-5">
+    <div class="bg-white border border-gray-200 rounded-lg p-4 text-sm text-gray-600">
+        <div>Encounter ID: <code class="bg-gray-100 px-1 rounded">{{ record.id[:8] }}…</code></div>
+        <div>Tạo lúc: {{ record.created_at }}</div>
+        {% if record.image_filename %}<div>Ảnh: {{ record.image_filename }}</div>{% endif %}
+    </div>
+
+    {% if d.ood_flag %}
+    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
+        <p class="font-semibold text-yellow-800">⚠ Ngoài phạm vi (OOD)</p>
+        <p class="text-sm text-yellow-800 mt-1">
+            Trường hợp này nằm ngoài phạm vi 8 bệnh — vui lòng tham khảo bác sĩ chuyên khoa.
+        </p>
+    </div>
+    {% endif %}
+
+    <div class="bg-white border border-gray-200 rounded-lg p-6">
+        <h2 class="text-sm uppercase tracking-wide text-gray-500 mb-2">Chẩn đoán chính</h2>
+        <div class="text-2xl font-semibold text-gray-900">{{ d.primary_diagnosis | default('—') }}</div>
+        <div class="text-sm text-gray-600 mt-1">
+            Độ tin cậy:
+            <span class="font-medium">
+                {% if d.confidence is defined and d.confidence is not none %}
+                    {{ '%.0f'|format(d.confidence * 100) }}%
+                {% else %}—{% endif %}
+            </span>
+        </div>
+        <div class="mt-4 inline-block px-3 py-1 rounded border {{ tier_class }} font-medium text-sm">
+            {{ tier_labels.get(tier, tier) | default('—') }}
+        </div>
+    </div>
+
+    {% if d.differential %}
+    <div class="bg-white border border-gray-200 rounded-lg p-6">
+        <h2 class="text-sm uppercase tracking-wide text-gray-500 mb-3">Chẩn đoán phân biệt</h2>
+        <ul class="space-y-2">
+            {% for item in d.differential %}
+            <li>
+                <div class="flex justify-between text-sm mb-1">
+                    <span class="font-medium">{{ item.condition | default('—') }}</span>
+                    <span class="text-gray-600">
+                        {% if item.probability is defined and item.probability is not none %}
+                            {{ '%.0f'|format(item.probability * 100) }}%
+                        {% else %}—{% endif %}
+                    </span>
+                </div>
+                <div class="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                    <div class="bg-blue-500 h-2 rounded-full"
+                         style="width: {{ ((item.probability | default(0)) * 100) | round(0) }}%"></div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if d.key_features_observed %}
+    <div class="bg-white border border-gray-200 rounded-lg p-6">
+        <h2 class="text-sm uppercase tracking-wide text-gray-500 mb-3">Đặc điểm quan sát</h2>
+        <ul class="list-disc list-inside text-sm text-gray-800 space-y-1">
+            {% for feat in d.key_features_observed %}
+            <li>{{ feat }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if d.red_flags and d.red_flags | length > 0 %}
+    <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded">
+        <p class="font-semibold text-red-800 mb-2">🚨 Red flags</p>
+        <ul class="list-disc list-inside text-sm text-red-800 space-y-1">
+            {% for rf in d.red_flags %}
+            <li>{{ rf }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    {% if d.image_quality_notes %}
+    <div class="text-xs text-gray-500 italic">
+        Ghi chú chất lượng ảnh: {{ d.image_quality_notes }}
+    </div>
+    {% endif %}
+
+    {% if record.clinical_note %}
+    <div class="bg-white border border-gray-200 rounded-lg p-4">
+        <h3 class="text-xs uppercase tracking-wide text-gray-500 mb-1">Ghi chú lâm sàng đã nhập</h3>
+        <p class="text-sm text-gray-800 whitespace-pre-line">{{ record.clinical_note }}</p>
+    </div>
+    {% endif %}
+
+    <div class="flex gap-3 pt-2">
+        <a href="/upload" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md">
+            Encounter mới
+        </a>
+        <a href="/encounters" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm rounded-md">
+            Lịch sử
+        </a>
+    </div>
+</div>
+{% endblock %}
