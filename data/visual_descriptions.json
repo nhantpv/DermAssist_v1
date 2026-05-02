@@ -1,0 +1,537 @@
+{
+  "generated_at": "2026-05-01T16:43:21Z",
+  "model": "Qwen/Qwen2.5-VL-7B-Instruct-AWQ",
+  "model_settings": {
+    "temperature": 0.0,
+    "seed": 42,
+    "max_tokens": 200
+  },
+  "prompt_version": "describe-v1.1",
+  "source_datasets": [
+    {
+      "name": "Fitzpatrick17k",
+      "license": "CC BY-NC-SA 4.0"
+    },
+    {
+      "name": "SCIN",
+      "license": "CC BY 4.0"
+    },
+    {
+      "name": "DermNet NZ",
+      "license": "CC BY-NC-ND (session-only)"
+    }
+  ],
+  "source_dataset": "multi-source",
+  "source_dataset_license": "CC BY 4.0 / CC BY-NC-ND (session-only) / CC BY-NC-SA 4.0",
+  "n_conditions": 8,
+  "n_descriptions_per_condition": 5,
+  "conditions": {
+    "atopic_dermatitis": {
+      "name_vi": "Viêm da cơ địa",
+      "name_en": "Atopic Dermatitis",
+      "n_descriptions": 5,
+      "descriptions": [
+        {
+          "image_index": 0,
+          "source_dataset": "DermNet NZ",
+          "license": "CC BY-NC-ND (session-only)",
+          "case_id": null,
+          "fitzpatrick_type": null,
+          "monk_tone": null,
+          "source_url": "https://dermnetnz.org/assets/Uploads/SCORAD/atopic-dryness-3.jpg",
+          "description": "Ảnh cho thấy một vùng da bị tổn thương với màu sắc hồng và có vảy. Hình dạng của tổn thương là hình dạng không đều, kích thước lớn hơn một phần của cánh tay. Bề mặt của tổn thương có vẻ gồ ghề với nhiều vảy. Ranh giới với da lành rõ ràng. Tổn thương phân bố tập trung ở một phần cánh tay."
+        },
+        {
+          "image_index": 1,
+          "source_dataset": "DermNet NZ",
+          "license": "CC BY-NC-ND (session-only)",
+          "case_id": null,
+          "fitzpatrick_type": null,
+          "monk_tone": null,
+          "source_url": "https://dermnetnz.org/assets/Uploads/SCORAD/atopic-excoriation-2.jpg",
+          "description": "Ảnh cho thấy da có nhiều vết đỏ nhỏ, hình dạng không đều, kích thước nhỏ. Bề mặt của các vết đỏ này phẳng, không có vảy, mụn nước hoặc loét. Ranh giới giữa các vết đỏ và da lành khá rõ ràng. Các vết đỏ phân bố rải rác trên bề mặt da."
+        },
+        {
+          "image_index": 2,
+          "source_dataset": "DermNet NZ",
+          "license": "CC BY-NC-ND (session-only)",
+          "case_id": null,
+          "fitzpatrick_type": null,
+          "monk_tone": null,
+          "source_url": "https://dermnetnz.org/assets/Uploads/SCORAD/atopic-oozy-1.jpg",
+          "description": "Hình ảnh cho thấy một vùng da trên cổ có màu sắc hơi đỏ và sưng. Hình dạng tổn thương là một dải dài, kích thước khoảng 5-6 cm. Bề mặt của tổn thương phẳng, không có vảy, mụn nước hoặc loét. Ranh giới với da lành rõ ràng. Tổn thương phân bố tập trung ở một vùng duy nhất trên cổ."
+        },
+        {
+          "image_index": 3,
+          "source_dataset": "DermNet NZ",
+          "license": "CC BY-NC-ND (session-only)",
+          "case_id": null,
+          "fitzpatrick_type": null,
+          "monk_tone": null,
+          "source_url": "https://dermnetnz.org/assets/Uploads/SCORAD/atopic-oozy-2.jpg",
+          "description": "Hình ảnh cho thấy một vùng da bị tổn thương với màu đỏ sẫm. Hình dạng tổn thương là hình dạng không đều, kích thước lớn hơn một chút so với một ngón tay. Bề mặt tổn thương có vẻ gồ ghề, với nhiều vảy nhỏ. Ranh giới với da lành khá rõ ràng. Tổn thương phân bố tập trung ở một khu vực cụ thể trên cánh tay."
+        },
+        {
+          "image_index": 4,
+          "source_dataset": "DermNet NZ",
+          "license": "CC BY-NC-ND (session-only)",
+          "case_id": null,
+          "fitzpatrick_type": null,
+          "monk_tone": null,
+          "source_url": "https://dermnetnz.org/assets/Uploads/SCORAD/atopic-red-0.jpg",
+          "description": "Ảnh cho thấy một vùng da với màu sắc khác biệt, có màu nâu nhạt hơn so với da lành. Hình dạng tổn thương là các mảng nhỏ, không đều và phân bố rải rác trên bề mặt da. Bề mặt của tổn thương phẳng, không có vảy, mụn nước hoặc loét. Ranh giới với da lành khá rõ ràng."
+        }
+      ]
+    },
+    "fungal_infection": {
+      "name_vi": "Nấm da",
+      "name_en": "Fungal Infection",
+      "n_descriptions": 5,
+      "descriptions": [
+        {
+          "image_index": 0,
+          "source_dataset": "SCIN",
+          "license": "CC BY 4.0",
+          "case_id": 7983361504090468022,
+          "fitzpatrick_type": null,
+          "monk_tone": 3.0,
+          "source_url": "https://storage.googleapis.com/dx-scin-public-data/dataset/images/-1468052965323478288.png",
+          "description": "Trên ảnh, có một vùng da bị tổn thương với màu sắc hơi đỏ và có vảy. Hình dạng tổn thương không rõ ràng, kích thước nhỏ. Bề mặt có vẻ gồ ghề với những vảy nhỏ. Ranh giới với da lành khá rõ. Tổn thương phân bố rải rác trên bề mặt da."
+        },
+        {
+          "image_index": 1,
+          "source_dataset": "SCIN",
+          "license": "CC BY 4.0",
+          "case_id": 7997336758556521282,
+          "fitzpatrick_type": null,
+          "monk_tone": 4.0,
+          "source_url": "https://storage.googleapis.com/dx-scin-public-data/dataset/images/-4016417847531780967.png",
+          "description": "Trên ảnh, có thể thấy các tổn thương da màu đỏ, hình dạng nhỏ và phân bố rải rác trên lưng. Bề mặt của chúng phẳng, không có dấu hiệu của vảy, mụn nước hoặc loét. Ranh giới giữa các tổn thương và da lành khá rõ ràng."
+        },
+        {
+          "image_index": 2,
+          "source_dataset": "SCIN",
+          "license": "CC BY 4.0",
+          "case_id": 8021394879303182286,
+          "fitzpatrick_type": null,
+          "monk_tone": 3.0,
+          "source_url": "https://storage.googleapis.com/dx-scin-public-data/dataset/images/-1084871799635208946.png",
+          "description": "Hình ảnh cho thấy một tổn thương da màu đỏ, hình dạng tròn, kích thước khoảng 2-3 cm. Bề mặt tổn thương phẳng, không có vảy, mụn nước hoặc loét. Ranh giới với da lành rõ ràng. Tổn thương phân bố tập trung ở một điểm cụ thể trên da."
+        },
+        {
+          "image_index": 3,
+          "source_dataset": "SCIN",
+          "license": "CC BY 4.0",
+          "case_id": 8030451491615126764,
+          "fitzpatrick_type": null,
+          "monk_tone": 3.0,
+          "source_url": "https://storage.googleapis.com/dx-scin-public-data/dataset/images/-6958898424924160515.png",
+          "description": "Hình ảnh cho thấy một vùng da bị tổn thương với màu sắc đỏ và hơi sẫm. Hình dạng tổn thương là hình dạng không đều, kích thước khoảng 2-3 cm. Bề mặt có vẻ gồ ghề, có vảy và pha lẫn các vết loét nhỏ. Ranh giới với da lành khá rõ ràng. Tổn thương phân bố tập trung ở một khu vực cụ thể trên cánh tay."
+        },
+        {
+          "image_index": 4,
+          "source_dataset": "SCIN",
+          "license": "CC BY 4.0",
+          "case_id": 8134648445171304529,
+          "fitzpatrick_type": null,
+          "monk_tone": 1.0,
+          "source_url": "https://storage.googleapis.com/dx-scin-public-data/dataset/images/-5361566185499497261.png",
+          "description": "Trong hình ảnh, có một vết đen nhỏ ở giữa cổ. Vết đen này có hình dạng hình thoi, kích thước khoảng 2x2 mm. Bề mặt vết đen phẳng, không có dấu hiệu của vảy, mụn nước, loét hay gồ ghề. Ranh giới giữa vết đen và da lành khá rõ ràng. Vết đen phân bố tập trung ở giữa cổ."
+        }
+      ]
+    },
+    "herpes_zoster": {
+      "name_vi": "Zona thần kinh",
+      "name_en": "Herpes Zoster",
+      "n_descriptions": 5,
+      "descriptions": [
+        {
+          "image_index": 0,
+          "source_dataset": "SCIN",
+          "license": "CC BY 4.0",
+          "case_id": -1003358831658393077,
+          "fitzpatrick_type": null,
+          "monk_tone": 4.0,
+          "source_url": "https://storage.googleapis.com/dx-scin-public-data/dataset/images/-4027806997035329030.png",
+          "description": "Hình ảnh cho thấy một tổn thương da màu đỏ và hồng, có kích thước khoảng 2x2 cm. Bề mặt tổn thương gồ ghề, có vảy và phồng lên. Ranh giới với da lành rõ ràng. Tổn thương phân bố tập trung ở một khu vực cụ thể trên cánh tay."
+        },
+        {
+          "image_index": 1,
+          "source_dataset": "SCIN",
+          "license": "CC BY 4.0",
+          "case_id": -1262951599314161924,
+          "fitzpatrick_type": null,
+          "monk_tone": 1.0,
+          "source_url": "https://storage.googleapis.com/dx-scin-public-data/dataset/images/-5949315841433628424.png",
+          "description": "Hình ảnh cho thấy một vùng da bị tổn thương màu đỏ rực, có kích thước khoảng 5x5 cm. Bề mặt của tổn thương có nhiều mụn nước nhỏ, bề mặt gồ ghề. Ranh giới với da lành khá rõ ràng. Tổn thương phân bố tập trung ở một khu vực cụ thể trên cơ thể."
+        },
+        {
+          "image_index": 2,
+          "source_dataset": "SCIN",
+          "license": "CC BY 4.0",
+          "case_id": -1369732580479712253,
+          "fitzpatrick_type": null,
+          "monk_tone": 1.0,
+          "source_url": "https://storage.googleapis.com/dx-scin-public-data/dataset/images/-1465175528467791703.png",
+          "description": "Hình ảnh cho thấy một tổn thương da màu đỏ, hình dạng như một vết bầm tím nhỏ, kích thước khoảng 1-2 cm. Bề mặt tổn thương phẳng, không có vảy, mụn nước hoặc loét. Ranh giới với da lành rõ ràng. Tổn thương phân bố tập trung ở một điểm cụ thể trên da."
+        },
+        {
+          "image_index": 3,
+          "source_dataset": "SCIN",
+          "license": "CC BY 4.0",
+          "case_id": -1465287498233593963,
+          "fitzpatrick_type": null,
+          "monk_tone": 2.0,
+          "source_url": "https://storage.googleapis.com/dx-scin-public-data/dataset/images/-5463082777905620639.png",
+          "description": "Hình ảnh cho thấy một vùng da bị tổn thương với màu đỏ và có vảy. Hình dạng tổn thương là hình dạng nhỏ, kích thước khoảng 1-2 cm. Bề mặt có vảy, bề mặt tổn thương gồ ghề. Ranh giới với da lành rõ ràng. Tổn thương phân bố tập trung ở một khu vực."
+        },
+        {
+          "image_index": 4,
+          "source_dataset": "SCIN",
+          "license": "CC BY 4.0",
+          "case_id": -1489059460537780682,
+          "fitzpatrick_type": null,
+          "monk_tone": 3.0,
+          "source_url": "https://storage.googleapis.com/dx-scin-public-data/dataset/images/-2570809058775178619.png",
+          "description": "Trên hình ảnh, có một vết thương nhỏ màu đỏ ở phía trên bên trái của hình. Vết thương có hình dạng hình bầu dục, kích thước khoảng 2-3 mm. Bề mặt vết thương phẳng, không có vảy, mụn nước hoặc loét. Ranh giới với da lành rõ ràng. Vết thương phân bố tập trung ở một điểm cụ thể."
+        }
+      ]
+    },
+    "acne": {
+      "name_vi": "Mụn trứng cá",
+      "name_en": "Acne",
+      "n_descriptions": 5,
+      "descriptions": [
+        {
+          "image_index": 0,
+          "source_dataset": "Fitzpatrick17k",
+          "license": "CC BY-NC-SA 4.0",
+          "case_id": null,
+          "fitzpatrick_type": "5",
+          "monk_tone": null,
+          "source_url": "http://atlasdermatologico.com.br/img?imageId=35",
+          "description": "Ảnh tổn thương da này có màu sắc hơi xám, bề mặt gồ ghề với nhiều vảy nhỏ. Ranh giới với da lành khá rõ ràng. Tổn thương phân bố rải rác trên bề mặt da."
+        },
+        {
+          "image_index": 1,
+          "source_dataset": "Fitzpatrick17k",
+          "license": "CC BY-NC-SA 4.0",
+          "case_id": null,
+          "fitzpatrick_type": "4",
+          "monk_tone": null,
+          "source_url": "http://atlasdermatologico.com.br/img?imageId=17",
+          "description": "Ảnh cho thấy một vùng da bị tổn thương với màu sắc đỏ và sưng. Hình dạng tổn thương đa dạng, từ mụn nước đến các vết loét nhỏ. Bề mặt có nhiều vảy và vết loét. Ranh giới với da lành khá rõ ràng. Tổn thương phân bố rải rác trên bề mặt da."
+        },
+        {
+          "image_index": 2,
+          "source_dataset": "Fitzpatrick17k",
+          "license": "CC BY-NC-SA 4.0",
+          "case_id": null,
+          "fitzpatrick_type": "5",
+          "monk_tone": null,
+          "source_url": "http://atlasdermatologico.com.br/img?imageId=22",
+          "description": "Ảnh cho thấy da bị tổn thương với màu sắc chủ yếu là hồng và nâu. Hình dạng tổn thương là các vảy nhỏ, kích thước khoảng 1-2 mm. Bề mặt của tổn thương có vẻ gồ ghề. Ranh giới với da lành khá rõ ràng. Tổn thương phân bố rải rác trên lưng, không có dấu hiệu của sự đối xứng."
+        },
+        {
+          "image_index": 3,
+          "source_dataset": "Fitzpatrick17k",
+          "license": "CC BY-NC-SA 4.0",
+          "case_id": null,
+          "fitzpatrick_type": "5",
+          "monk_tone": null,
+          "source_url": "http://atlasdermatologico.com.br/img?imageId=32",
+          "description": "Ảnh cho thấy một vùng da với màu sắc hơi xám, có nhiều vảy nhỏ và gồ ghề. Ranh giới với da lành không rõ ràng. Hình dạng và kích thước của các vảy không đồng nhất, phân bố rải rác trên bề mặt da."
+        },
+        {
+          "image_index": 4,
+          "source_dataset": "Fitzpatrick17k",
+          "license": "CC BY-NC-SA 4.0",
+          "case_id": null,
+          "fitzpatrick_type": "4",
+          "monk_tone": null,
+          "source_url": "http://atlasdermatologico.com.br/img?imageId=23",
+          "description": "Ảnh cho thấy một vùng da bị tổn thương với màu sắc đỏ và hồng. Hình dạng của tổn thương là các nốt nhỏ, kích thước khoảng 1-2 mm. Bề mặt của tổn thương có vẻ gồ ghề, với nhiều nốt nhỏ. Ranh giới với da lành khá rõ ràng. Tổn thương phân bố rải rác trên bề mặt da."
+        }
+      ]
+    },
+    "contact_dermatitis": {
+      "name_vi": "Viêm da tiếp xúc & Mề đay",
+      "name_en": "Contact Dermatitis",
+      "n_descriptions": 5,
+      "descriptions": [
+        {
+          "image_index": 0,
+          "source_dataset": "Fitzpatrick17k",
+          "license": "CC BY-NC-SA 4.0",
+          "case_id": null,
+          "fitzpatrick_type": "4",
+          "monk_tone": null,
+          "source_url": "http://atlasdermatologico.com.br/img?imageId=7794",
+          "description": "Hình ảnh tổn thương da này có màu sắc hơi xám, hình dạng nhỏ, kích thước khoảng 2-3 mm. Bề mặt của nó phẳng, không có vảy, mụn nước, hoặc loét. Ranh giới với da lành rõ ràng. Tổn thương phân bố tập trung ở một điểm cụ thể."
+        },
+        {
+          "image_index": 1,
+          "source_dataset": "Fitzpatrick17k",
+          "license": "CC BY-NC-SA 4.0",
+          "case_id": null,
+          "fitzpatrick_type": "3",
+          "monk_tone": null,
+          "source_url": "http://atlasdermatologico.com.br/img?imageId=7795",
+          "description": "Ảnh cho thấy một vùng da có màu sắc hơi sáng hơn so với da lành xung quanh. Hình dạng tổn thương không rõ ràng, kích thước nhỏ. Bề mặt da có vẻ phẳng, không có dấu hiệu của vảy, mụn nước, loét hoặc gồ ghề. Ranh giới với da lành khá rõ ràng. Tổn thương phân bố rải rác trên bề mặt da."
+        },
+        {
+          "image_index": 2,
+          "source_dataset": "Fitzpatrick17k",
+          "license": "CC BY-NC-SA 4.0",
+          "case_id": null,
+          "fitzpatrick_type": "4",
+          "monk_tone": null,
+          "source_url": "http://atlasdermatologico.com.br/img?imageId=5013",
+          "description": "Hình ảnh cho thấy một vùng da bị tổn thương với màu sắc đỏ và sẫm. Hình dạng tổn thương là hình dạng không đều, kích thước lớn hơn so với các vùng da lành xung quanh. Bề mặt tổn thương có vẻ gồ ghề, với nhiều vảy nhỏ. Ranh giới với da lành rõ ràng. Tổn thương phân bố tập trung ở một khu vực cụ thể trên cổ."
+        },
+        {
+          "image_index": 3,
+          "source_dataset": "Fitzpatrick17k",
+          "license": "CC BY-NC-SA 4.0",
+          "case_id": null,
+          "fitzpatrick_type": "3",
+          "monk_tone": null,
+          "source_url": "http://atlasdermatologico.com.br/img?imageId=5010",
+          "description": "Hình ảnh cho thấy một vùng da bị tổn thương với màu sắc đỏ sẫm. Hình dạng tổn thương là hình dạng không đều, kích thước lớn hơn so với các vùng da lành xung quanh. Bề mặt của tổn thương có vẻ gồ ghề, với nhiều vảy nhỏ. Ranh giới với da lành khá rõ ràng. Tổn thương phân bố tập trung ở một khu vực cụ thể trên da."
+        },
+        {
+          "image_index": 4,
+          "source_dataset": "Fitzpatrick17k",
+          "license": "CC BY-NC-SA 4.0",
+          "case_id": null,
+          "fitzpatrick_type": "4",
+          "monk_tone": null,
+          "source_url": "http://atlasdermatologico.com.br/img?imageId=1155",
+          "description": "Trên ảnh, có một tổn thương màu hồng nhạt, hình dạng như một vùng da bị khô và phẳng. Ranh giới với da lành khá rõ ràng. Tổn thương phân bố tập trung ở môi trên, không có dấu hiệu của các vảy, mụn nước hoặc loét."
+        }
+      ]
+    },
+    "eczema": {
+      "name_vi": "Chàm",
+      "name_en": "Eczema",
+      "n_descriptions": 5,
+      "descriptions": [
+        {
+          "image_index": 0,
+          "source_dataset": "SCIN",
+          "license": "CC BY 4.0",
+          "case_id": 7900792660563069769,
+          "fitzpatrick_type": null,
+          "monk_tone": 3.0,
+          "source_url": "https://storage.googleapis.com/dx-scin-public-data/dataset/images/-284320352049367340.png",
+          "description": "Hình ảnh cho thấy một vùng da có màu sắc hơi xanh, kích thước nhỏ, hình dạng không đều. Bề mặt da có vẻ phẳng, không có dấu hiệu của vảy, mụn nước, hoặc loét. Ranh giới với da lành khá rõ ràng. Đặc điểm phân bố là tập trung ở một khu vực cụ thể."
+        },
+        {
+          "image_index": 1,
+          "source_dataset": "SCIN",
+          "license": "CC BY 4.0",
+          "case_id": 7925347571055295954,
+          "fitzpatrick_type": null,
+          "monk_tone": 3.0,
+          "source_url": "https://storage.googleapis.com/dx-scin-public-data/dataset/images/34131928669282508.png",
+          "description": "Trên hình ảnh, có thể thấy các vết đỏ nhỏ, hình dạng như mụn nước, phân bố rải rác trên da. Ranh giới giữa các vết tổn thương và da lành khá rõ ràng."
+        },
+        {
+          "image_index": 2,
+          "source_dataset": "SCIN",
+          "license": "CC BY 4.0",
+          "case_id": 7992099817197638769,
+          "fitzpatrick_type": null,
+          "monk_tone": 1.0,
+          "source_url": "https://storage.googleapis.com/dx-scin-public-data/dataset/images/-5042389906153516361.png",
+          "description": "Hình ảnh cho thấy da có nhiều vết đỏ nhỏ, hình dạng như mụn nước. Vết đỏ này có kích thước khoảng 1-2 mm. Bề mặt của vết đỏ phẳng, không có vảy hoặc phồng. Ranh giới giữa vết đỏ và da lành khá rõ ràng. Vết đỏ phân bố rải rác trên bề mặt da."
+        },
+        {
+          "image_index": 3,
+          "source_dataset": "SCIN",
+          "license": "CC BY 4.0",
+          "case_id": 8013060069192910653,
+          "fitzpatrick_type": null,
+          "monk_tone": 2.0,
+          "source_url": "https://storage.googleapis.com/dx-scin-public-data/dataset/images/-1001492676369731180.png",
+          "description": "Hình ảnh cho thấy một vùng da có màu đỏ và phẳng. Ranh giới với da lành khá rõ ràng. Vùng tổn thương phân bố rải rác trên bề mặt da."
+        },
+        {
+          "image_index": 4,
+          "source_dataset": "SCIN",
+          "license": "CC BY 4.0",
+          "case_id": 8071773760767575918,
+          "fitzpatrick_type": null,
+          "monk_tone": 4.0,
+          "source_url": "https://storage.googleapis.com/dx-scin-public-data/dataset/images/-3881518848080738850.png",
+          "description": "Hình ảnh cho thấy một vùng da bị tổn thương, có màu sắc hơi vàng và sần sùi. Hình dạng tổn thương không đều, kích thước nhỏ, phân bố rải rác trên lòng bàn tay. Bề mặt có vẻ gồ ghề, có thể là do các vảy hoặc mẩn đỏ. Ranh giới với da lành không rõ ràng."
+        }
+      ]
+    },
+    "psoriasis": {
+      "name_vi": "Vảy nến",
+      "name_en": "Psoriasis",
+      "n_descriptions": 5,
+      "descriptions": [
+        {
+          "image_index": 0,
+          "source_dataset": "Fitzpatrick17k",
+          "license": "CC BY-NC-SA 4.0",
+          "case_id": null,
+          "fitzpatrick_type": "5",
+          "monk_tone": null,
+          "source_url": "http://atlasdermatologico.com.br/img?imageId=6306",
+          "description": "Trên ảnh, có thể thấy da bị tổn thương với màu sắc xanh lá cây, hình dạng là các mảng lớn, kích thước từ nhỏ đến lớn. Bề mặt da có vẻ gồ ghề, với nhiều vảy. Ranh giới với da lành khá rõ ràng. Tổn thương phân bố đối xứng trên hai chân."
+        },
+        {
+          "image_index": 1,
+          "source_dataset": "Fitzpatrick17k",
+          "license": "CC BY-NC-SA 4.0",
+          "case_id": null,
+          "fitzpatrick_type": "5",
+          "monk_tone": null,
+          "source_url": "http://atlasdermatologico.com.br/img?imageId=6244",
+          "description": "Ảnh cho thấy một vùng da bị tổn thương với màu sắc xanh lục. Hình dạng tổn thương là hình tròn, kích thước khoảng 1-2 cm. Bề mặt có vẻ gồ ghề, có thể là do các vảy hoặc mụn nước. Ranh giới với da lành khá rõ ràng. Tổn thương phân bố tập trung ở một khu vực cụ thể trên da."
+        },
+        {
+          "image_index": 2,
+          "source_dataset": "Fitzpatrick17k",
+          "license": "CC BY-NC-SA 4.0",
+          "case_id": null,
+          "fitzpatrick_type": "3",
+          "monk_tone": null,
+          "source_url": "http://atlasdermatologico.com.br/img?imageId=6260",
+          "description": "Ảnh cho thấy một vùng da bị tổn thương màu đỏ, kích thước lớn hơn so với da lành. Bề mặt của tổn thương phẳng, không có vảy, mụn nước hoặc loét. Ranh giới với da lành rõ ràng. Tổn thương phân bố tập trung ở giữa trán."
+        },
+        {
+          "image_index": 3,
+          "source_dataset": "Fitzpatrick17k",
+          "license": "CC BY-NC-SA 4.0",
+          "case_id": null,
+          "fitzpatrick_type": "4",
+          "monk_tone": null,
+          "source_url": "http://atlasdermatologico.com.br/img?imageId=6313",
+          "description": "Hình ảnh cho thấy một tổn thương da màu đỏ sẫm, hình dạng không đều, kích thước khoảng 1-2 cm. Bề mặt tổn thương có vẻ gồ ghề, với một số vảy nhỏ. Ranh giới với da lành khá rõ ràng. Tổn thương phân bố tập trung ở một khu vực cụ thể trên da."
+        },
+        {
+          "image_index": 4,
+          "source_dataset": "Fitzpatrick17k",
+          "license": "CC BY-NC-SA 4.0",
+          "case_id": null,
+          "fitzpatrick_type": "3",
+          "monk_tone": null,
+          "source_url": "http://atlasdermatologico.com.br/img?imageId=6261",
+          "description": "Ảnh cho thấy một vùng da bị tổn thương với màu hồng đậm. Hình dạng tổn thương là không đều, kích thước lớn hơn một phần của cơ thể. Bề mặt có vẻ gồ ghề, với nhiều vảy nhỏ. Ranh giới với da lành khá rõ ràng. Tổn thương phân bố tập trung ở một khu vực cụ thể."
+        }
+      ]
+    },
+    "scabies": {
+      "name_vi": "Bệnh ghẻ",
+      "name_en": "Scabies",
+      "n_descriptions": 5,
+      "descriptions": [
+        {
+          "image_index": 0,
+          "source_dataset": "Fitzpatrick17k",
+          "license": "CC BY-NC-SA 4.0",
+          "case_id": null,
+          "fitzpatrick_type": "5",
+          "monk_tone": null,
+          "source_url": "http://atlasdermatologico.com.br/img?imageId=4900",
+          "description": "Ảnh cho thấy một vùng da bị tổn thương màu đỏ sẫm, có bề mặt gồ ghề với nhiều vảy. Ranh giới với da lành không rõ ràng. Tổn thương phân bố tập trung ở cổ."
+        },
+        {
+          "image_index": 1,
+          "source_dataset": "Fitzpatrick17k",
+          "license": "CC BY-NC-SA 4.0",
+          "case_id": null,
+          "fitzpatrick_type": "5",
+          "monk_tone": null,
+          "source_url": "http://atlasdermatologico.com.br/img?imageId=4899",
+          "description": "Ảnh cho thấy một vùng da bị tổn thương màu đỏ sẫm, hình dạng không đều, kích thước khoảng 1-2 cm. Bề mặt có vẻ gồ ghề, không phẳng. Ranh giới với da lành rõ ràng. Tổn thương phân bố tập trung ở phía sau tai."
+        },
+        {
+          "image_index": 2,
+          "source_dataset": "Fitzpatrick17k",
+          "license": "CC BY-NC-SA 4.0",
+          "case_id": null,
+          "fitzpatrick_type": "3",
+          "monk_tone": null,
+          "source_url": "http://atlasdermatologico.com.br/img?imageId=6564",
+          "description": "Ảnh cho thấy một vùng da với nhiều vết đỏ nhỏ, hình dạng như mụn nước. Vết đỏ này có kích thước khoảng 1-2 mm. Bề mặt của vết đỏ phẳng, không có vảy, mụn nước hoặc loét. Ranh giới giữa vết đỏ và da lành khá rõ ràng. Vết đỏ phân bố rải rác trên bề mặt da."
+        },
+        {
+          "image_index": 3,
+          "source_dataset": "Fitzpatrick17k",
+          "license": "CC BY-NC-SA 4.0",
+          "case_id": null,
+          "fitzpatrick_type": "4",
+          "monk_tone": null,
+          "source_url": "http://atlasdermatologico.com.br/img?imageId=4903",
+          "description": "Hình ảnh cho thấy da bàn tay bị tổn thương với màu sắc trắng xám, bề mặt có nhiều vảy. Ranh giới với da lành khá rõ ràng. Tổn thương phân bố tập trung ở lòng bàn tay, không có dấu hiệu của mụn nước hoặc loét."
+        },
+        {
+          "image_index": 4,
+          "source_dataset": "Fitzpatrick17k",
+          "license": "CC BY-NC-SA 4.0",
+          "case_id": null,
+          "fitzpatrick_type": "5",
+          "monk_tone": null,
+          "source_url": "http://atlasdermatologico.com.br/img?imageId=4913",
+          "description": "Hình ảnh cho thấy một vùng da bị tổn thương trên lòng bàn tay. Màu sắc tổn thương là màu nâu và có một số vết đỏ. Hình dạng tổn thương là hình vảy, kích thước lớn hơn một phần lòng bàn tay. Bề mặt có nhiều vảy, không phẳng. Ranh giới với da lành rõ ràng. Tổn thương phân bố tập trung ở lòng bàn tay."
+        }
+      ]
+    }
+  },
+  "validation": {
+    "diagnostic_term_violations": 0,
+    "flagged_items": [],
+    "short_descriptions": [
+      {
+        "key": "eczema",
+        "image_index": 1,
+        "sentences": 2,
+        "description": "Trên hình ảnh, có thể thấy các vết đỏ nhỏ, hình dạng như mụn nước, phân bố rải rác trên da. Ranh giới giữa các vết tổn thương và da lành khá rõ ràng."
+      }
+    ],
+    "long_descriptions": [
+      {
+        "key": "scabies",
+        "image_index": 4,
+        "sentences": 6
+      }
+    ],
+    "short_count": 1,
+    "long_count": 1
+  },
+  "run_info": {
+    "peak_vram_gb": 0.0,
+    "per_condition_source_breakdown": {
+      "atopic_dermatitis": {
+        "DermNet NZ": 5
+      },
+      "fungal_infection": {
+        "SCIN": 5
+      },
+      "herpes_zoster": {
+        "SCIN": 5
+      },
+      "acne": {
+        "Fitzpatrick17k": 5
+      },
+      "contact_dermatitis": {
+        "Fitzpatrick17k": 5
+      },
+      "eczema": {
+        "SCIN": 5
+      },
+      "psoriasis": {
+        "Fitzpatrick17k": 5
+      },
+      "scabies": {
+        "Fitzpatrick17k": 5
+      }
+    },
+    "determinism_check": "pass"
+  }
+}
