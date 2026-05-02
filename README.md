@@ -85,6 +85,18 @@ descriptions, evaluation) runs in Colab notebooks under [`notebooks/`](notebooks
 | `04_dataset_audit.ipynb` | Per-condition sample count audit (Risk C) |
 | `05_eval_run.ipynb` | Run eval suite, dump metrics |
 
+### Editing notebooks
+
+Notebooks under `notebooks/` are source-of-truth — edit them directly
+in Colab or Jupyter. Before committing, clear all outputs:
+
+```bash
+jupyter nbconvert --clear-output --inplace notebooks/*.ipynb
+```
+
+(Or use `nbstripout` if installed.) Do not commit outputs — they bloat
+the repo and create spurious diffs.
+
 ### Running tests
 
 ```bash
