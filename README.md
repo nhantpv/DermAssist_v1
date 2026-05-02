@@ -97,6 +97,13 @@ jupyter nbconvert --clear-output --inplace notebooks/*.ipynb
 (Or use `nbstripout` if installed.) Do not commit outputs — they bloat
 the repo and create spurious diffs.
 
+## Run the demo (parallel-track, throwaway)
+
+A self-contained web demo of the diagnostic flow lives in `demo/`. It
+uses OpenAI gpt-4o-mini and is fully isolated from the canonical
+backend (which is still being built). See [`demo/README.md`](demo/README.md)
+for setup. Requires `OPENAI_API_KEY`.
+
 ### Running tests
 
 ```bash
