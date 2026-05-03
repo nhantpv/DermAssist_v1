@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Lịch sử encounter — DermAssist VN{% endblock %}
+
+{% block content %}
+<div class="space-y-4">
+    <div class="flex items-center justify-between">
+        <h1 class="text-xl font-semibold text-slate-900">Lịch sử encounter</h1>
+        <a href="/encounters/new" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md">
+            + Encounter mới
+        </a>
+    </div>
+
+    {% if records %}
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <table class="min-w-full text-sm">
+            <thead class="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                <tr>
+                    <th class="px-4 py-3 text-left">Thời gian</th>
+                    <th class="px-4 py-3 text-left">Chẩn đoán chính</th>
+                    <th class="px-4 py-3 text-left">Tier xử trí</th>
+                    <th class="px-4 py-3 text-left">Trạng thái</th>
+                    <th class="px-4 py-3"></th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+                {% for r in records %}
+                <tr class="hover:bg-slate-50">
+                    <td class="px-4 py-3 text-slate-700 whitespace-nowrap">{{ r.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td class="px-4 py-3 font-medium text-slate-900">{{ r.primary_diagnosis or '— đang xử lý —' }}</td>
+                    <td class="px-4 py-3">{% with tier = r.management_tier %}{% include "_components/tier_badge.html" %}{% endwith %}</td>
+                    <td class="px-4 py-3 text-slate-600">
+                        {% if r.doctor_finalized %}<span class="text-emerald-600">✓ Đã hoàn tất</span>
+                        {% else %}<span class="text-slate-400">Đang chờ bác sĩ</span>{% endif %}
+                    </td>
+                    <td class="px-4 py-3 text-right"><a href="/encounters/{{ r.id }}" class="text-blue-600 hover:underline">Xem chi tiết</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center">
+        <p class="text-slate-600 text-sm">Chưa có encounter nào — tải ảnh đầu tiên để bắt đầu.</p>
+        <a href="/encounters/new" class="inline-block mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md">
+            Tạo encounter đầu tiên
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

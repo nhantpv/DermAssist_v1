@@ -1,0 +1,16 @@
+/* HTMX loading spinner — pure CSS so we don't ship JS for it */
+.htmx-indicator { display: none; }
+.htmx-request .htmx-indicator { display: block; }
+.htmx-request.htmx-indicator { display: block; }
+
+/* Confidence bullets style — used in some result variants */
+.conf-dot {
+    display: inline-block; width: 0.5rem; height: 0.5rem;
+    border-radius: 9999px; background: #cbd5e1; margin-right: 2px;
+}
+.conf-dot.filled { background: #2563eb; }
+
+/* Mobile-tap target sizing for radio buttons in finalize form */
+@media (max-width: 640px) {
+    label > input[type="radio"] { min-width: 1.25rem; min-height: 1.25rem; }
+}

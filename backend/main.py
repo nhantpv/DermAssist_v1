@@ -1,15 +1,20 @@
 """FastAPI app entrypoint with Vietnamese error handlers and lifespan."""
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 from sqlalchemy import text
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from backend.db import engine
 from backend.routes.auth import router as auth_router
+from backend.routes.chat import router as chat_router
+from backend.routes.encounters import router as encounters_router
 from backend.routes.pages import router as pages_router
 
 logger = logging.getLogger("dermassist")
@@ -31,6 +36,17 @@ app = FastAPI(
     description="VLM clinical decision support — V1 closed beta",
     version="1.0.0-beta",
     lifespan=lifespan,
+)
+
+# Templates and static — exposed via app.state so route modules can grab
+# them without importing this module (avoids circular imports).
+_BACKEND_ROOT = Path(__file__).resolve().parent
+templates = Jinja2Templates(directory=str(_BACKEND_ROOT / "templates"))
+app.state.templates = templates
+app.mount(
+    "/static",
+    StaticFiles(directory=str(_BACKEND_ROOT / "static")),
+    name="static",
 )
 
 
@@ -75,3 +91,5 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 
 app.include_router(auth_router)
 app.include_router(pages_router)
+app.include_router(encounters_router)
+app.include_router(chat_router)

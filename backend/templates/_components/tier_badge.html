@@ -1,0 +1,11 @@
+{# Usage: {% include "_components/tier_badge.html" %} where `tier` is in scope #}
+{% set tier_classes = {
+    'home_care':       ('bg-emerald-50 border-emerald-300 text-emerald-800', 'Tự chăm sóc tại nhà'),
+    'outpatient_72h':  ('bg-amber-50 border-amber-300 text-amber-800',       'Khám trong 3 ngày'),
+    'outpatient_24h':  ('bg-orange-50 border-orange-300 text-orange-800',    'Khám trong 24 giờ'),
+    'emergency':       ('bg-red-50 border-red-400 text-red-800',             'Cấp cứu ngay'),
+} %}
+{% set classes, label = tier_classes.get(tier, ('bg-slate-50 border-slate-300 text-slate-700', tier or '—')) %}
+<span class="inline-block px-3 py-1 rounded border font-medium text-sm {{ classes }}">
+    {{ label }}
+</span>

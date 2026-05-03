@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% block title %}Encounter #{{ record.id_short }} — DermAssist VN{% endblock %}
+
+{% block content %}
+{% set d = record.diagnosis %}
+
+<div class="flex items-center justify-between mb-4">
+    <a href="/encounters" class="text-sm text-slate-600 hover:text-blue-700">← Quay lại lịch sử</a>
+    <span class="text-xs text-slate-500">Encounter #{{ record.id_short }} • {{ record.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+</div>
+
+{% if d.get('_stub') %}
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 p-8 text-center mb-6">
+    <div class="inline-block w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+    <p class="text-slate-700 font-medium">Chẩn đoán đang được xử lý</p>
+    <p class="text-sm text-slate-500 mt-2">Pipeline chưa hoàn thành (đợi TIP-010 / TIP-011 wire-up).</p>
+</div>
+
+{% if record.doctor_finalized %}
+<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-5">
+    <p class="text-sm font-semibold text-emerald-900">✓ Bác sĩ đã hoàn tất chẩn đoán</p>
+    <dl class="mt-3 text-sm text-emerald-900 space-y-1">
+        <div><dt class="inline font-medium">Chẩn đoán:</dt> <dd class="inline">{{ record.doctor_diagnosis }}</dd></div>
+        <div><dt class="inline font-medium">Tier:</dt> <dd class="inline">{{ record.doctor_tier }}</dd></div>
+        {% if record.doctor_notes %}<div><dt class="inline font-medium">Ghi chú:</dt> <dd class="inline">{{ record.doctor_notes }}</dd></div>{% endif %}
+    </dl>
+</div>
+{% endif %}
+
+{% else %}
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <aside class="lg:col-span-1 space-y-4">
+        {% if record.image_url %}
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+            <h3 class="text-xs uppercase tracking-wide text-slate-500 mb-2">Ảnh đã phân tích</h3>
+            <img src="{{ record.image_url }}" alt="Tổn thương" class="w-full rounded-md border border-slate-200">
+        </div>
+        {% endif %}
+
+        {% if record.clinical_note %}
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
+            <h3 class="text-xs uppercase tracking-wide text-slate-500 mb-2">Ghi chú lâm sàng (đã ẩn PII)</h3>
+            <p class="text-sm text-slate-700 whitespace-pre-line">{{ record.clinical_note }}</p>
+            {% if record.pii_redacted_count and record.pii_redacted_count > 0 %}
+            <p class="text-xs text-amber-600 mt-2">ⓘ {{ record.pii_redacted_count }} thông tin nhận dạng đã được loại bỏ.</p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </aside>
+
+    <section class="lg:col-span-2 space-y-5">
+
+        {% if d.ood_flag %}
+        <div class="bg-amber-50 border-l-4 border-amber-400 p-5 rounded-r">
+            <div class="flex items-start gap-3">
+                <span class="text-2xl" aria-hidden="true">⚠</span>
+                <div>
+                    <p class="font-semibold text-amber-900">Ngoài phạm vi 8 bệnh hỗ trợ</p>
+                    <p class="text-sm text-amber-800 mt-1">Hệ thống không tự tin chẩn đoán. Đề xuất hội chẩn chuyên khoa da liễu.</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 sm:p-6">
+            <h2 class="text-xs uppercase tracking-wide text-slate-500 mb-3">Đề xuất chẩn đoán từ AI</h2>
+            <div class="text-2xl font-semibold text-slate-900">{{ d.primary_diagnosis or '—' }}</div>
+            <div class="text-sm text-slate-600 mt-1">
+                Độ tin cậy:
+                {% if d.confidence is defined and d.confidence is not none %}
+                    <span class="font-medium">{{ '%.0f'|format(d.confidence * 100) }}%</span>
+                {% else %}—{% endif %}
+            </div>
+            <div class="mt-4">{% with tier = d.management_tier %}{% include "_components/tier_badge.html" %}{% endwith %}</div>
+        </div>
+
+        {% if d.differential %}
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 sm:p-6">
+            <h3 class="text-xs uppercase tracking-wide text-slate-500 mb-3">Chẩn đoán phân biệt</h3>
+            <ul class="space-y-3">
+                {% for item in d.differential %}
+                <li>
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="font-medium">{{ item.condition or '—' }}</span>
+                        <span class="text-slate-600">{{ '%.0f'|format((item.probability or 0) * 100) }}%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                        <div class="bg-blue-500 h-2 rounded-full" style="width: {{ ((item.probability or 0) * 100) | round(0) }}%"></div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if d.key_features_observed %}
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 sm:p-6">
+            <h3 class="text-xs uppercase tracking-wide text-slate-500 mb-3">Đặc điểm quan sát</h3>
+            <ul class="list-disc list-inside text-sm text-slate-800 space-y-1">
+                {% for f in d.key_features_observed %}<li>{{ f }}</li>{% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if d.red_flags and d.red_flags|length > 0 %}
+        <div class="bg-red-50 border-l-4 border-red-400 p-4 rounded-r">
+            <p class="font-semibold text-red-800 mb-2">🚨 Red flags</p>
+            <ul class="list-disc list-inside text-sm text-red-800 space-y-1">
+                {% for rf in d.red_flags %}<li>{{ rf }}</li>{% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if d.citations %}
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 sm:p-6">
+            <h3 class="text-xs uppercase tracking-wide text-slate-500 mb-3">Trích dẫn</h3>
+            <ul class="text-sm text-slate-700 space-y-1">
+                {% for c in d.citations %}
+                    {% if c is mapping %}
+                        <li>🔗 <code class="bg-slate-100 px-1.5 py-0.5 rounded text-xs">{{ c.chunk_id }}</code> {{ c.title or '' }}</li>
+                    {% else %}
+                        <li>🔗 <code class="bg-slate-100 px-1.5 py-0.5 rounded text-xs">{{ c }}</code></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 sm:p-6">
+            <h3 class="text-xs uppercase tracking-wide text-slate-500 mb-3">Hỏi tiếp về chẩn đoán này</h3>
+            <div id="chat-messages" class="space-y-3 mb-4 max-h-80 overflow-y-auto">
+                {% for msg in record.chat_messages %}
+                <div class="flex {% if msg.role == 'user' %}justify-end{% endif %}">
+                    <div class="max-w-[85%] px-4 py-2 rounded-lg text-sm
+                        {% if msg.role == 'user' %}bg-blue-50 text-blue-900{% else %}bg-slate-100 text-slate-800{% endif %}">
+                        {{ msg.content }}
+                        {% if msg.citations %}<div class="text-xs text-slate-500 mt-1">📎 {{ msg.citations|join(', ') }}</div>{% endif %}
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-xs text-slate-400 italic">Chưa có hội thoại — hỏi bên dưới để bắt đầu.</p>
+                {% endfor %}
+            </div>
+            <form hx-post="/chat/message" hx-target="#chat-messages" hx-swap="beforeend" hx-indicator="#chat-spinner" class="flex gap-2">
+                <input type="hidden" name="encounter_id" value="{{ record.id }}">
+                <input type="text" name="message" required maxlength="2000" placeholder="VD: Liều acyclovir cho bệnh nhân 70kg?" class="flex-1 px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm rounded-md">Gửi</button>
+            </form>
+            <div id="chat-spinner" class="htmx-indicator text-xs text-slate-500 mt-2">⌛ Đang trả lời…</div>
+        </div>
+
+        {% if not record.doctor_finalized %}
+        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 sm:p-6">
+            <h3 class="text-xs uppercase tracking-wide text-slate-500 mb-4">Chẩn đoán cuối cùng (tùy chọn)</h3>
+            <form method="post" action="/encounters/{{ record.id }}/finalize" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Chẩn đoán độc lập</label>
+                    <input type="text" name="doctor_diagnosis" required maxlength="200" class="w-full px-3 py-2 border border-slate-300 rounded-md text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Tier xử trí</label>
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        {% for value, label in [('home_care', 'Tự chăm sóc'),('outpatient_72h', 'Khám 3 ngày'),('outpatient_24h', 'Khám 24h'),('emergency', 'Cấp cứu')] %}
+                        <label class="flex items-center gap-2 px-3 py-2 border border-slate-300 rounded-md hover:bg-white cursor-pointer">
+                            <input type="radio" name="doctor_tier" value="{{ value }}" required>
+                            <span>{{ label }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Ghi chú</label>
+                    <textarea name="doctor_notes" rows="2" maxlength="1000" class="w-full px-3 py-2 border border-slate-300 rounded-md text-sm"></textarea>
+                </div>
+                <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-md">Lưu chẩn đoán cuối cùng</button>
+            </form>
+        </div>
+        {% else %}
+        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-5">
+            <p class="text-sm font-semibold text-emerald-900">✓ Bác sĩ đã hoàn tất chẩn đoán</p>
+            <dl class="mt-3 text-sm text-emerald-900 space-y-1">
+                <div><dt class="inline font-medium">Chẩn đoán:</dt> <dd class="inline">{{ record.doctor_diagnosis }}</dd></div>
+                <div><dt class="inline font-medium">Tier:</dt> <dd class="inline">{{ record.doctor_tier }}</dd></div>
+                {% if record.doctor_notes %}<div><dt class="inline font-medium">Ghi chú:</dt> <dd class="inline">{{ record.doctor_notes }}</dd></div>{% endif %}
+            </dl>
+        </div>
+        {% endif %}
+
+    </section>
+</div>
+{% endif %}
+{% endblock %}

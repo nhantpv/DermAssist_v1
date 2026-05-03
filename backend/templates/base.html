@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}DermAssist VN{% endblock %}</title>
+    <meta name="description" content="Hệ thống hỗ trợ quyết định lâm sàng da liễu — Closed beta.">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/app.css">
+
+    <script src="https://unpkg.com/htmx.org@1.9.12"
+            integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2"
+            crossorigin="anonymous"></script>
+
+    {% block head_extra %}{% endblock %}
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col antialiased">
+    {% include "_components/disclaimer_banner.html" %}
+
+    {% if request.cookies.get('dermassist_session') %}
+        {% include "_components/nav.html" %}
+    {% endif %}
+
+    <main class="flex-1 w-full max-w-6xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="border-t border-slate-200 bg-white">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 text-xs text-slate-500 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <span>DermAssist VN — Closed beta cho mục đích nghiên cứu kỹ thuật.</span>
+            <span>Apache 2.0 • <a href="/about" class="hover:text-slate-700 underline-offset-2 hover:underline">Thông tin</a></span>
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
