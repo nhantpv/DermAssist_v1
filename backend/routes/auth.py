@@ -132,19 +132,18 @@ async def login_google_callback(
         username_to_token = existing["username"]
         role_to_token = existing["role"]
     else:
-        # New user; insert with placeholder password_hash (never used)
+        # New user; password_hash is NULL for OAuth-only accounts (migration 004).
         await db.execute(
             text(
                 "INSERT INTO users (username, password_hash, role, google_sub, email, "
                 "rate_limit_rpm, created_at, last_login_at) "
-                "VALUES (:u, :ph, :r, :s, :e, :rpm, NOW(), NOW()) "
+                "VALUES (:u, NULL, :r, :s, :e, :rpm, NOW(), NOW()) "
                 "ON CONFLICT (username) DO UPDATE SET "
                 "  google_sub = EXCLUDED.google_sub, email = EXCLUDED.email, "
                 "  last_login_at = NOW()"
             ),
             {
                 "u": username,
-                "ph": "$2b$12$oauth_placeholder_never_used_xxxxxxxxxxxxxxxxxxxxxxxxxx",
                 "r": "doctor",
                 "s": google_sub,
                 "e": email,
