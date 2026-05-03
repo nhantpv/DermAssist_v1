@@ -11,6 +11,7 @@ import os
 from importlib import reload
 
 import httpx
+import numpy as np
 import pytest
 import pytest_asyncio
 from asgi_lifespan import LifespanManager
@@ -78,8 +79,13 @@ async def _login_demo(client: httpx.AsyncClient) -> str:
     return cookie
 
 
-def _make_png_bytes(size: tuple[int, int] = (64, 64)) -> bytes:
-    img = Image.new("RGB", size, color=(200, 100, 100))
+def _make_png_bytes(size: tuple[int, int] = (320, 320)) -> bytes:
+    """A noisy PNG that passes TIP-007 preflight (≥256px + Laplacian
+    variance > 100). Default size 320×320; callers that need a smaller
+    or larger image can pass `size`."""
+    rng = np.random.default_rng(seed=1234)
+    arr = rng.integers(0, 255, size=(size[1], size[0], 3), dtype=np.uint8)
+    img = Image.fromarray(arr)
     buf = io.BytesIO()
     img.save(buf, format="PNG")
     return buf.getvalue()

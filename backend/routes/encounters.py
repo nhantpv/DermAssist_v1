@@ -1,22 +1,23 @@
-"""Encounter routes: list, new form, create stub, detail, finalize, image serve.
+"""Encounter routes: list, new form, create, detail, finalize, image serve.
 
 NOTE on schema: the TIP-006 spec assumed column names that differ from
 TIP-004's actual `encounters` schema. Mapping used below:
-    TIP-006 expected           Actual (migration 001)
+    TIP-006 expected           Actual (migration 001 + 005)
     -----------------------    ----------------------------------
     diagnosis_json             result_json
     clinical_note_raw          clinical_note      (post-redaction column)
     clinical_note_redacted     clinical_note      (same — only one column exists)
     pii_redaction_count        pii_redacted_count
-    patient_context_json       NOT YET PRESENT — patient context dropped server-side
+    patient_context_json       patient_context    (added in migration 005)
     doctor_finalized           derived as (doctor_completed_at IS NOT NULL)
     doctor_diagnosis           doctor_final_dx
     doctor_tier                doctor_final_tier
     doctor_finalized_at        doctor_completed_at
 
-`patient_context` form fields are accepted but not persisted in this stub
-(TIP-007 / TIP-010 will need a migration to add a column). The encounter
-template renders gracefully without it.
+TIP-007-V1: image preflight (blur + dimension) and Vietnamese-aware PII
+redaction now run inline in /encounters/create. Failed preflight
+re-renders the form with a flash error and creates no row. Successful
+preflight redacts the clinical note before persisting.
 """
 from __future__ import annotations
 
@@ -41,6 +42,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.auth import CurrentUser, get_current_user
 from backend.db import get_db
+from backend.preflight import check_image
+from backend.text.pii import redact_pii
 
 router = APIRouter(tags=["encounters"])
 
@@ -150,6 +153,7 @@ async def encounter_new_form(
 
 @router.post("/encounters/create")
 async def encounter_create_stub(
+    request: Request,
     user: Annotated[CurrentUser, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
     image: UploadFile = File(...),
@@ -160,14 +164,10 @@ async def encounter_create_stub(
     prior_treatments: str | None = Form(None),
     relevant_history: str | None = Form(None),
 ):
-    """STUB endpoint per TIP-006. Saves image + form data, creates an
-    encounter row with result_json={'_stub': true}. The real pipeline
-    (preflight → RAG → VLM → orchestrator) wires in TIP-007–010 and
-    TIP-011 will replace this stub.
-
-    Patient context fields (age_years, sex, ...) are accepted but not
-    persisted — the schema does not yet have a column for them. See
-    DEVIATIONS in the completion report.
+    """Saves image + form data, runs preflight + PII redaction, persists
+    an encounter row with result_json={'_stub': true}. The downstream
+    pipeline (RAG → VLM → orchestrator) wires in TIP-008–010 and
+    TIP-011 will replace the stub result_json with real diagnosis output.
     """
     image_bytes = await image.read()
 
@@ -178,22 +178,62 @@ async def encounter_create_stub(
     if image.content_type not in ALLOWED_CONTENT_TYPES:
         raise HTTPException(status_code=400, detail="Định dạng ảnh không hỗ trợ.")
 
+    # === TIP-007: preflight ===
+    preflight = check_image(image_bytes)
+
+    if not preflight.passed:
+        # Don't create an encounter row, don't save the image.
+        # Re-render the form with a flash error.
+        recent_rows = (
+            await db.execute(
+                text(
+                    "SELECT id::text AS id, created_at, "
+                    "       primary_diagnosis, management_tier "
+                    "  FROM encounters "
+                    " WHERE doctor_id = CAST(:uid AS uuid) AND deleted_at IS NULL "
+                    " ORDER BY created_at DESC LIMIT 5"
+                ),
+                {"uid": user["id"]},
+            )
+        ).mappings().all()
+        templates = request.app.state.templates
+        return templates.TemplateResponse(
+            request,
+            "encounter_new.html",
+            {
+                "recent_encounters": [dict(r) for r in recent_rows],
+                "flash": {"kind": "error", "message": preflight.failure_reason},
+                "current_user_username": user["username"],
+            },
+            status_code=400,
+        )
+
     image_sha, image_filename = _save_image(image_bytes, image.content_type)
     image_path = f"data/uploads/{image_filename}"
 
-    # Touch the patient_context locals so static analyzers don't flag them
-    # as unused — they're intentionally accepted-but-discarded for now.
-    _ = (age_years, sex, symptom_duration_days, prior_treatments, relevant_history)
+    # === TIP-007: PII redaction on clinical_note ===
+    redacted = redact_pii(clinical_note or "")
+
+    patient_context = {
+        "age_years": age_years,
+        "sex": sex if sex else None,
+        "symptom_duration_days": symptom_duration_days,
+        "prior_treatments": prior_treatments,
+        "relevant_history": relevant_history,
+    }
 
     result = await db.execute(
         text(
             "INSERT INTO encounters "
             "    (doctor_id, image_path, image_sha256, image_size_bytes, "
             "     clinical_note, pii_redacted_count, "
-            "     preflight_passed, result_json, created_at) "
+            "     preflight_passed, preflight_blur_score, "
+            "     preflight_brightness, preflight_failure, "
+            "     patient_context, result_json, created_at) "
             "VALUES (CAST(:uid AS uuid), :path, :sha, :sz, "
-            "        :note, 0, "
-            "        TRUE, CAST(:dj AS jsonb), NOW()) "
+            "        :note, :pii_n, "
+            "        TRUE, :blur, :bright, NULL, "
+            "        CAST(:pc AS jsonb), CAST(:dj AS jsonb), NOW()) "
             "RETURNING id::text AS id"
         ),
         {
@@ -201,7 +241,11 @@ async def encounter_create_stub(
             "path": image_path,
             "sha": image_sha,
             "sz": len(image_bytes),
-            "note": clinical_note,
+            "note": redacted.text,
+            "pii_n": redacted.count,
+            "blur": preflight.blur_score,
+            "bright": preflight.brightness,
+            "pc": json.dumps(patient_context),
             "dj": json.dumps({"_stub": True}),
         },
     )

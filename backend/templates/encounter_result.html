@@ -16,6 +16,16 @@
     <p class="text-sm text-slate-500 mt-2">Pipeline chưa hoàn thành (đợi TIP-010 / TIP-011 wire-up).</p>
 </div>
 
+{% if record.clinical_note %}
+<div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 mb-6">
+    <h3 class="text-xs uppercase tracking-wide text-slate-500 mb-2">Ghi chú lâm sàng (đã ẩn PII)</h3>
+    <p class="text-sm text-slate-700 whitespace-pre-line">{{ record.clinical_note }}</p>
+    {% if record.pii_redacted_count and record.pii_redacted_count > 0 %}
+    <p class="text-xs text-amber-600 mt-2">ⓘ {{ record.pii_redacted_count }} thông tin nhận dạng đã được loại bỏ.</p>
+    {% endif %}
+</div>
+{% endif %}
+
 {% if record.doctor_finalized %}
 <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-5">
     <p class="text-sm font-semibold text-emerald-900">✓ Bác sĩ đã hoàn tất chẩn đoán</p>
