@@ -46,6 +46,11 @@ pip install --upgrade pip
 pip install -e ".[dev]"
 ```
 
+After `git clone`, run `bash scripts/install-commit-hook.sh` to enable
+the commit-message linter. Commits that don't start with `TIP-XXX:`,
+`chore:`, `docs:`, `fix:`, `feat:`, `test:`, or `refactor:` will be
+rejected. (Optional but strongly recommended.)
+
 Available extras:
 
 - `[dev]` — pytest, pytest-asyncio, ruff, mypy, asgi-lifespan
