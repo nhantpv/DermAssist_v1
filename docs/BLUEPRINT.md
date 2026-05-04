@@ -437,8 +437,10 @@ CREATE TABLE audit_log (
 --   'auth_login', 'auth_failed'
 --   'encounter_create_start', 'preflight_pass', 'preflight_fail'
 --   'pii_redacted', 'injection_detected'
+--   'image_dedup_hit'        (added TIP-011 — same-image second upload)
 --   'rag_retrieve', 'vlm_call', 'vlm_retry', 'vlm_fallback_ood'
 --   'output_validated', 'encounter_complete'
+--   'chat_turn'              (added TIP-010 — follow-up Q&A in encounter)
 --   'encounter_deleted', 'encounter_expired'
 --   'doctor_finalized'
 
