@@ -166,9 +166,35 @@ async def test_encounters_new_authenticated_renders(client: httpx.AsyncClient):
     assert "name=\"clinical_note\"" in body
 
 
-# === Encounter create stub ===
+# === Encounter create (TIP-010 wired pipeline) ===
+#
+# This test now exercises the full TIP-010 pipeline. The orchestrator's
+# VLM call is monkeypatched out so the route test stays hermetic; the
+# real-pipeline behavior is covered by tests/integration/test_orchestrator.py.
 
-async def test_encounter_create_stub_redirects_to_detail(client: httpx.AsyncClient):
+async def test_encounter_create_redirects_to_detail(
+    client: httpx.AsyncClient, monkeypatch
+):
+    from backend.schemas import DiagnosisOutput
+
+    fake_diag = DiagnosisOutput(
+        primary_diagnosis="Viêm da cơ địa",
+        primary_condition_key="atopic_dermatitis",
+        confidence=0.7,
+        differential=[],
+        key_features_observed=["Da khô"],
+        management_tier="outpatient_72h",
+        red_flags=[],
+        ood_flag=False,
+        image_quality_notes="",
+        citations=[],
+    )
+
+    async def _fake_diagnose(**kwargs):
+        return fake_diag
+
+    monkeypatch.setattr("backend.orchestrator.diagnose", _fake_diagnose)
+
     cookie = await _login_demo(client)
     png = _make_png_bytes()
     files = {"image": ("test.png", png, "image/png")}
@@ -196,7 +222,8 @@ async def test_encounter_create_stub_redirects_to_detail(client: httpx.AsyncClie
         cookies={"dermassist_session": cookie},
     )
     assert detail.status_code == 200
-    assert "Chẩn đoán đang được xử lý" in detail.text  # stub state
+    # Real diagnosis content surfaces (no more stub spinner)
+    assert "Viêm da cơ địa" in detail.text
 
 
 async def test_encounter_create_rejects_oversized_image(client: httpx.AsyncClient):
@@ -306,7 +333,41 @@ async def test_finalize_rejects_invalid_tier(client: httpx.AsyncClient):
 
 # === Chat stub ===
 
-async def test_chat_stub_returns_html_fragment(client: httpx.AsyncClient):
+async def test_chat_returns_html_fragment(
+    client: httpx.AsyncClient, monkeypatch
+):
+    """Chat is now wired in TIP-010. Mock the VLM bits so this stays
+    hermetic; the real-pipeline behavior is in test_chat_wired.py."""
+    from backend.schemas import DiagnosisOutput
+    from backend.vlm.chat import ChatResponse
+
+    fake_diag = DiagnosisOutput(
+        primary_diagnosis="Zona thần kinh",
+        primary_condition_key="herpes_zoster",
+        confidence=0.8,
+        differential=[],
+        key_features_observed=[],
+        management_tier="outpatient_24h",
+        red_flags=[],
+        ood_flag=False,
+        image_quality_notes="",
+        citations=[],
+    )
+
+    async def _fake_diagnose(**kwargs):
+        return fake_diag
+
+    async def _fake_chat(**kwargs):
+        return ChatResponse(
+            content="Acyclovir 800mg uống 5 lần/ngày trong 7 ngày.",
+            citations=[],
+            latency_ms=42,
+            chunks_used=[],
+        )
+
+    monkeypatch.setattr("backend.orchestrator.diagnose", _fake_diagnose)
+    monkeypatch.setattr("backend.routes.chat.chat_followup", _fake_chat)
+
     cookie = await _login_demo(client)
     files = {"image": ("test.png", _make_png_bytes(), "image/png")}
     create_resp = await client.post(
@@ -326,8 +387,8 @@ async def test_chat_stub_returns_html_fragment(client: httpx.AsyncClient):
     assert resp.status_code == 200
     assert "text/html" in resp.headers["content-type"]
     body = resp.text
-    assert "Liều acyclovir?" in body  # echo
-    assert "TIP-010" in body  # placeholder reply
+    assert "Liều acyclovir?" in body  # user echo
+    assert "Acyclovir 800mg" in body  # real reply
 
 
 async def test_chat_requires_auth(client: httpx.AsyncClient):

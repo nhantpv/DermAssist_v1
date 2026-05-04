@@ -21,8 +21,6 @@ preflight redacts the clinical note before persisting.
 """
 from __future__ import annotations
 
-import hashlib
-import json
 from pathlib import Path
 from typing import Annotated
 from uuid import UUID
@@ -42,8 +40,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.auth import CurrentUser, get_current_user
 from backend.db import get_db
-from backend.preflight import check_image
-from backend.text.pii import redact_pii
+from backend.orchestrator import run_encounter
 
 router = APIRouter(tags=["encounters"])
 
@@ -53,24 +50,7 @@ _UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
 MAX_IMAGE_BYTES = 8 * 1024 * 1024
 ALLOWED_CONTENT_TYPES = {"image/jpeg", "image/png", "image/webp"}
-_EXT_BY_CONTENT_TYPE = {
-    "image/jpeg": ".jpg",
-    "image/png": ".png",
-    "image/webp": ".webp",
-}
 _VALID_TIERS = {"home_care", "outpatient_72h", "outpatient_24h", "emergency"}
-
-
-def _save_image(image_bytes: bytes, content_type: str) -> tuple[str, str]:
-    """Write image to data/uploads/<sha256>.<ext> if absent. Returns
-    (sha256_hex, relative_filename_only)."""
-    sha = hashlib.sha256(image_bytes).hexdigest()
-    ext = _EXT_BY_CONTENT_TYPE[content_type]
-    filename = f"{sha}{ext}"
-    path = _UPLOADS_DIR / filename
-    if not path.exists():
-        path.write_bytes(image_bytes)
-    return sha, filename
 
 
 def _row_to_record(row: dict) -> dict:
@@ -152,7 +132,7 @@ async def encounter_new_form(
 
 
 @router.post("/encounters/create")
-async def encounter_create_stub(
+async def encounter_create(
     request: Request,
     user: Annotated[CurrentUser, Depends(get_current_user)],
     db: Annotated[AsyncSession, Depends(get_db)],
@@ -164,11 +144,10 @@ async def encounter_create_stub(
     prior_treatments: str | None = Form(None),
     relevant_history: str | None = Form(None),
 ):
-    """Saves image + form data, runs preflight + PII redaction, persists
-    an encounter row with result_json={'_stub': true}. The downstream
-    pipeline (RAG → VLM → orchestrator) wires in TIP-008–010 and
-    TIP-011 will replace the stub result_json with real diagnosis output.
-    """
+    """Run the full TIP-010 pipeline: preflight → save → redact →
+    retrieve → diagnose → persist. On preflight fail, re-renders the
+    form with a flash. On success or VLM-fallback, redirects to the
+    result page."""
     image_bytes = await image.read()
 
     if len(image_bytes) == 0:
@@ -178,12 +157,24 @@ async def encounter_create_stub(
     if image.content_type not in ALLOWED_CONTENT_TYPES:
         raise HTTPException(status_code=400, detail="Định dạng ảnh không hỗ trợ.")
 
-    # === TIP-007: preflight ===
-    preflight = check_image(image_bytes)
+    patient_context = {
+        "age_years": age_years,
+        "sex": sex if sex else None,
+        "symptom_duration_days": symptom_duration_days,
+        "prior_treatments": prior_treatments,
+        "relevant_history": relevant_history,
+    }
 
-    if not preflight.passed:
-        # Don't create an encounter row, don't save the image.
-        # Re-render the form with a flash error.
+    result = await run_encounter(
+        db=db,
+        doctor_id=user["id"],
+        image_bytes=image_bytes,
+        image_content_type=image.content_type,
+        clinical_note=clinical_note,
+        patient_context=patient_context,
+    )
+
+    if not result.preflight_passed:
         recent_rows = (
             await db.execute(
                 text(
@@ -202,56 +193,15 @@ async def encounter_create_stub(
             "encounter_new.html",
             {
                 "recent_encounters": [dict(r) for r in recent_rows],
-                "flash": {"kind": "error", "message": preflight.failure_reason},
+                "flash": {"kind": "error", "message": result.preflight_failure},
                 "current_user_username": user["username"],
             },
             status_code=400,
         )
 
-    image_sha, image_filename = _save_image(image_bytes, image.content_type)
-    image_path = f"data/uploads/{image_filename}"
-
-    # === TIP-007: PII redaction on clinical_note ===
-    redacted = redact_pii(clinical_note or "")
-
-    patient_context = {
-        "age_years": age_years,
-        "sex": sex if sex else None,
-        "symptom_duration_days": symptom_duration_days,
-        "prior_treatments": prior_treatments,
-        "relevant_history": relevant_history,
-    }
-
-    result = await db.execute(
-        text(
-            "INSERT INTO encounters "
-            "    (doctor_id, image_path, image_sha256, image_size_bytes, "
-            "     clinical_note, pii_redacted_count, "
-            "     preflight_passed, preflight_blur_score, "
-            "     preflight_brightness, preflight_failure, "
-            "     patient_context, result_json, created_at) "
-            "VALUES (CAST(:uid AS uuid), :path, :sha, :sz, "
-            "        :note, :pii_n, "
-            "        TRUE, :blur, :bright, NULL, "
-            "        CAST(:pc AS jsonb), CAST(:dj AS jsonb), NOW()) "
-            "RETURNING id::text AS id"
-        ),
-        {
-            "uid": user["id"],
-            "path": image_path,
-            "sha": image_sha,
-            "sz": len(image_bytes),
-            "note": redacted.text,
-            "pii_n": redacted.count,
-            "blur": preflight.blur_score,
-            "bright": preflight.brightness,
-            "pc": json.dumps(patient_context),
-            "dj": json.dumps({"_stub": True}),
-        },
+    return RedirectResponse(
+        url=f"/encounters/{result.encounter_id}", status_code=303
     )
-    new_id = result.mappings().first()["id"]
-    await db.commit()
-    return RedirectResponse(url=f"/encounters/{new_id}", status_code=303)
 
 
 @router.get("/encounters/{encounter_id}", response_class=HTMLResponse)
