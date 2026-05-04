@@ -34,6 +34,11 @@ data/raw/
 data/uploads/
 *.pdf
 
+# Eval results — JSON + HTML reports are reproducible build artifacts;
+# track the directory but exclude its contents
+data/eval_results/*
+!data/eval_results/.gitkeep
+
 # Models / weights
 *.bin
 *.safetensors
