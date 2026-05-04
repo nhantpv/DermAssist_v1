@@ -69,6 +69,17 @@ CHECK `role IN ('doctor','admin','demo')`.
 Indexes: `idx_encounters_doctor (doctor_id, created_at DESC) WHERE deleted_at IS NULL`,
 `idx_encounters_expires (expires_at) WHERE deleted_at IS NULL`.
 
+**Known gaps (V1 closed beta scope):**
+
+- `expires_at` defaults to `created_at + 90 days`, but no scheduled job
+  deletes expired rows. Manual cleanup via SQL if needed. V2: add a
+  pg_cron job or Railway scheduled task to soft-delete (`deleted_at = NOW()`)
+  rows where `expires_at < NOW() AND deleted_at IS NULL`.
+- Encounter deletion UI does not exist. Doctors cannot delete their
+  own encounters from the app. V2.
+- `encounters_list` query is capped at 50 rows (TIP-011). No UI
+  pagination — newest 50 wins. V2: cursor-based pagination.
+
 ### chat_messages
 
 | Column       | Type         | Nullable | Default              |

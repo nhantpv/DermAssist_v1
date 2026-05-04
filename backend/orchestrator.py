@@ -72,16 +72,18 @@ class OrchestratorResult:
 
 # === Helpers ===
 
-def _save_image(image_bytes: bytes, content_type: str) -> tuple[str, str]:
+def _save_image(image_bytes: bytes, content_type: str) -> tuple[str, str, bool]:
     """Write image to data/uploads/<sha256>.<ext> if absent. Returns
-    (sha256_hex, relative_filename_only)."""
+    (sha256_hex, relative_filename_only, dedup_hit) — dedup_hit is True
+    when an identical file already existed and the write was skipped."""
     sha = hashlib.sha256(image_bytes).hexdigest()
     ext = _EXT_BY_CONTENT_TYPE[content_type]
     filename = f"{sha}{ext}"
     path = _UPLOADS_DIR / filename
-    if not path.exists():
+    dedup_hit = path.exists()
+    if not dedup_hit:
         path.write_bytes(image_bytes)
-    return sha, filename
+    return sha, filename, dedup_hit
 
 
 async def _audit(
@@ -227,9 +229,18 @@ async def run_encounter(
         },
     )
 
-    # 3) Save image
-    _, image_filename = _save_image(image_bytes, image_content_type)
+    # 3) Save image (dedup by sha256)
+    _, image_filename, dedup_hit = _save_image(image_bytes, image_content_type)
     image_path = f"data/uploads/{image_filename}"
+    if dedup_hit:
+        await _audit(
+            db,
+            encounter_id=None,
+            doctor_id=doctor_id,
+            event_type="image_dedup_hit",
+            image_sha256=image_sha,
+            details={"image_sha256": image_sha, "matched_existing": True},
+        )
 
     # 4) Redact PII
     redacted = redact_pii(clinical_note or "")
