@@ -55,16 +55,6 @@ ocr = [
     "pymupdf>=1.24.0",
     "easyocr>=1.7.0",
 ]
-demo = [
-    "fastapi>=0.110.0",         # already in main deps; safe to repeat
-    "uvicorn[standard]>=0.27.0", # already in main deps; safe to repeat
-    "jinja2>=3.1.3",             # already in main deps
-    "python-multipart>=0.0.9",   # already in main deps
-    "itsdangerous>=2.2.0",       # for SessionMiddleware
-    "openai>=1.50.0",            # OpenAI SDK
-    "pillow>=10.2.0",            # already in main deps
-]
-
 # === This block is the fix for the install error ===
 # Tell setuptools exactly which directories are Python packages.
 # Without this, flat-layout repos with mixed dirs fail editable install.
