@@ -27,6 +27,11 @@ async def lifespan(app: FastAPI):
     async with engine.begin() as conn:
         await conn.execute(text("SELECT 1"))
     logger.info("Database connection verified")
+
+    from backend.retrieval.embed import warmup
+    warmup()
+    logger.info("Embedder warmed up")
+
     yield
     await engine.dispose()
 
