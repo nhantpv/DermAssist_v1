@@ -83,7 +83,8 @@ async def encounters_list(
                 "       (doctor_completed_at IS NOT NULL) AS doctor_finalized "
                 "  FROM encounters "
                 " WHERE doctor_id = CAST(:uid AS uuid) AND deleted_at IS NULL "
-                " ORDER BY created_at DESC"
+                " ORDER BY created_at DESC "
+                " LIMIT 50"
             ),
             {"uid": user["id"]},
         )
@@ -295,10 +296,36 @@ async def encounter_finalize(
 async def serve_upload(
     filename: str,
     user: Annotated[CurrentUser, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
 ):
-    """Auth-gated image serve."""
+    """Auth-gated AND ownership-gated image serve.
+
+    The filename is `<sha256>.<ext>`. Verify the requesting doctor owns
+    at least one encounter with this image_sha256 before serving the
+    bytes. Returns 404 (never 403) so existence isn't probeable across
+    doctors.
+    """
     if "/" in filename or ".." in filename or "\\" in filename:
         raise HTTPException(status_code=400, detail="Tên file không hợp lệ.")
+    sha = filename.split(".", 1)[0]
+    if len(sha) != 64 or not all(c in "0123456789abcdef" for c in sha):
+        raise HTTPException(status_code=404, detail="Không tìm thấy ảnh.")
+
+    owns = (
+        await db.execute(
+            text(
+                "SELECT 1 FROM encounters "
+                " WHERE image_sha256 = :sha "
+                "   AND doctor_id = CAST(:uid AS uuid) "
+                "   AND deleted_at IS NULL "
+                " LIMIT 1"
+            ),
+            {"sha": sha, "uid": user["id"]},
+        )
+    ).first()
+    if owns is None:
+        raise HTTPException(status_code=404, detail="Không tìm thấy ảnh.")
+
     path = _UPLOADS_DIR / filename
     if not path.exists():
         raise HTTPException(status_code=404, detail="Không tìm thấy ảnh.")
