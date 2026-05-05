@@ -94,6 +94,25 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
     )
 
 
+@app.get("/healthz")
+async def healthz():
+    """Liveness — always 200 if the process is up. No DB check;
+    DB outage shouldn't recycle the container, restart policy handles that."""
+    return {"status": "ok"}
+
+
+@app.get("/healthz/ready")
+async def healthz_ready():
+    """Readiness — Railway uses this to gate traffic.
+
+    With Option A (always-warm, sleepApplication=false), the lifespan
+    runs `warmup()` before the app starts serving requests, so by the
+    time any HTTP request reaches this endpoint the embedder is loaded
+    and we can return 200 unconditionally.
+    """
+    return {"status": "ready"}
+
+
 app.include_router(auth_router)
 app.include_router(pages_router)
 app.include_router(encounters_router)
