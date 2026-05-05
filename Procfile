@@ -1,1 +1,1 @@
-web: bash scripts/start_production.sh
+web: /bin/bash scripts/start_production.sh

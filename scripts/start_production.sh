@@ -6,7 +6,7 @@
 set -euo pipefail
 
 echo "→ Running migrations..."
-bash scripts/run_migrations.sh
+/bin/bash scripts/run_migrations.sh
 
 # Seed kb_chunks only when empty. The seed script itself is idempotent
 # (DELETE + INSERT by doc_id), but re-seeding 339 rows on every deploy
