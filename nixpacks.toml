@@ -1,0 +1,9 @@
+# Nixpacks build config for Railway. Pyproject says `requires-python = ">=3.11"`;
+# we pin python311 here to match the floor and keep wheel availability stable.
+# postgresql brings the libpq client (`psql`) needed by scripts/run_migrations.sh.
+
+[phases.setup]
+nixPkgs = ["python311", "postgresql"]
+
+[phases.install]
+cmds = ["pip install -e .[dev]"]
