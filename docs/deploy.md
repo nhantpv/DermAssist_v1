@@ -16,14 +16,36 @@ column reference see [SCHEMA_CURRENT.md](SCHEMA_CURRENT.md).
 - A Railway account ([railway.app](https://railway.app)). Free tier works
   for Option B/C cold-start; **hobby plan ($5/month) is required for
   Option A** (always-warm replica) — see §3.
-- A GitHub repo with this project pushed. Railway auto-deploys on push
-  to the configured branch.
 - An OpenAI API key with access to `gpt-4o-mini` (vision-capable).
 - Local dev environment confirmed working: `pytest` green, `/health`
   returns 200, `demo / demo` login works on localhost. **Do this
   sanity check before touching production.**
 - (Optional) A Google Cloud Console OAuth client if you want
   "Sign in with Google" enabled in production.
+
+### 1.1 GitHub remote (required first)
+
+Railway auto-deploys from a GitHub repository, so before anything in
+the Railway dashboard works, the local repo must have a GitHub remote
+and the latest commits must be pushed.
+
+```bash
+# 1. Create a new repository on github.com (private OK; Railway needs read access)
+# 2. Add the remote (substitute your owner/name):
+git remote add origin git@github.com:<your-username>/<repo-name>.git
+
+# 3. Verify:
+git remote -v
+# Expected:
+# origin  git@github.com:.../....git (fetch)
+# origin  git@github.com:.../....git (push)
+
+# 4. Push:
+git push -u origin main
+```
+
+Skip this and Railway's "Deploy from GitHub" wizard in §2.1 will not
+see your repo.
 
 ## 2. One-time Railway setup
 
@@ -190,6 +212,7 @@ Then in a browser:
   `base.html`).
 
 If `GOOGLE_CLIENT_ID` is set:
+
 - **AC-OAUTH** — `/auth/google` redirects to Google's consent
   screen. Confirm the redirect URI on the Google consent screen
   matches `GOOGLE_REDIRECT_URI` exactly. Authorize, return to the
