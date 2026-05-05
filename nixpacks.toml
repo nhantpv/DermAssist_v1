@@ -3,7 +3,15 @@
 # postgresql brings the libpq client (`psql`) needed by scripts/run_migrations.sh.
 
 [phases.setup]
-nixPkgs = ["python311", "python311Packages.pip", "postgresql"]
+nixPkgs = ["python311", "postgresql"]
 
 [phases.install]
-cmds = ["pip install -e .[dev]"]
+cmds = [
+  "python -m venv --copies /opt/venv",
+  "/opt/venv/bin/pip install --upgrade pip",
+  "/opt/venv/bin/pip install -e .[dev]"
+]
+
+[variables]
+PATH = "/opt/venv/bin:$PATH"
+NIXPACKS_PATH = "/opt/venv/bin:$NIXPACKS_PATH"
