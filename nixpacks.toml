@@ -3,7 +3,7 @@
 # postgresql brings the libpq client (`psql`) needed by scripts/run_migrations.sh.
 
 [phases.setup]
-nixPkgs = ["python311", "postgresql"]
+nixPkgs = ["python311", "python311Packages.pip", "postgresql"]
 
 [phases.install]
 cmds = [
