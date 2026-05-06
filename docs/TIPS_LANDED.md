@@ -60,13 +60,14 @@ Decommissioned in TIP-CLEANUP-V1 (see Wave 5).
 
 | TIP | Title | Status |
 |---|---|---|
-| TIP-008 | Plain hybrid RAG retrieval over QĐ-4416 chunks (BM25 + dense + RRF) | NOT STARTED |
-| TIP-009 | OpenAI gpt-4o-mini vision call w/ guided JSON | NOT STARTED |
-| TIP-010 | Orchestrator: preflight → RAG → VLM → persist + audit; chatbot wired | NOT STARTED |
-| TIP-011 | Per-doctor encounter persistence end-to-end + history view (replaces TIP-006 stub state) | NOT STARTED |
-| TIP-012 | Eval harness — top-1 / top-3 / OOD calibration on public datasets | NOT STARTED |
-| TIP-013 | Railway deploy with custom domain, Vietnamese disclaimer | NOT STARTED |
-| TIP-014 | VERIFY: Reverse Requirements Interview against Amendment 001 | NOT STARTED |
+| TIP-008-V1 | RAG retrieval (BM25 + dense + RRF) | DONE | 5fc28c2 |
+| TIP-009-V1 | VLM client (OpenAI provider) | DONE | d68559a |
+| TIP-010-V1 | Orchestrator + chat wire-up | DONE | 2a74e70 |
+| TIP-011-V1 | Encounter polish + scoping audit | DONE | 69b8d8e |
+| TIP-012-V1 | Eval harness + HTML report | DONE | 51178d6 |
+| TIP-013-V1 | Railway deploy | DONE | ade0c45 |
+| TIP-013-FIXUP-* | Deploy hotfixes | DONE | (3 commits) |
+| TIP-014-V1 | VERIFY | DONE | e31898b, 94b0a2b |
 
 ---
 
