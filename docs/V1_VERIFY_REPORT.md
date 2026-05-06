@@ -15,7 +15,7 @@ DermAssist VN V1 is a Vietnamese-language dermatology decision-support tool for 
 **What V1 measured (`data/eval_results/2026-05-04T13-51-17.json`, 48 of 49 gold-set cases scored):**
 top-1 accuracy **47.9%**, top-3 accuracy **58.3%**, tier accuracy **70.8%**, zoster sensitivity **20.0%**, OOD recall **100%**, OOD precision 52.9%, p50 latency 7.5 s, p95 17.0 s. Two REQ-EVAL targets miss: zoster sensitivity (20% vs ≥95% target) and gold-set size (49 vs ≥160 target). OOD recall and latency targets pass.
 
-**What's deployed:** `https://<RAILWAY_URL>` (Railway hobby plan, always-warm Option A; the project owner — Chủ nhà — fills the actual URL into this placeholder once at hand). Demo creds `demo / demo` work; Google OAuth works when `GOOGLE_CLIENT_ID` is configured. All five migrations applied; 339 `kb_chunks` rows seeded. Cold-start fully eliminated by `sleepApplication: false` in [railway.json](../railway.json).
+**What's deployed:** `https://https://team-098-dermassist-v1.up.railway.app` (Railway hobby plan, always-warm Option A; the project owner — Chủ nhà — fills the actual URL into this placeholder once at hand). Demo creds `demo / demo` work; Google OAuth works when `GOOGLE_CLIENT_ID` is configured. All five migrations applied; 339 `kb_chunks` rows seeded. Cold-start fully eliminated by `sleepApplication: false` in [railway.json](../railway.json).
 
 **What's explicitly V2** (per [Amendment §2](../../user_data/BLUEPRINT-AMENDMENT-001.md)): patient-facing flow, GraphRAG, real VN clinical data collection (IRB), CSRF middleware, rate-limit enforcement, expiry cron, encounter delete UI, multi-worker scale, conversation eval, structured observability. The V1 closing recommendation in §8 ranks the priorities for V2 work.
 
@@ -29,7 +29,7 @@ The 8 acceptance bullets, reproduced verbatim, with status.
 
 **Status:** 🟡 PARTIAL
 
-**Evidence:** Railway deploy is live (`<RAILWAY_URL>`); free `*.up.railway.app` subdomain assigned per [deploy.md §2 step 6](deploy.md). Custom-domain CNAME setup is documented but optional — owner has not configured one. Functionally indistinguishable from a custom domain for evaluation purposes.
+**Evidence:** Railway deploy is live (`https://team-098-dermassist-v1.up.railway.app`); free `*.up.railway.app` subdomain assigned per [deploy.md §2 step 6](deploy.md). Custom-domain CNAME setup is documented but optional — owner has not configured one. Functionally indistinguishable from a custom domain for evaluation purposes.
 
 ### AC §4.2 — Accessible via Google OAuth login OR `demo/demo` local fallback
 
@@ -207,7 +207,7 @@ This summary is what the capstone report's §6 (Evaluation) cites.
 
 ## Section 5 — Deployment verification
 
-**Live URL:** `https://<RAILWAY_URL>` *(Chủ nhà fills the actual Railway-assigned subdomain — the team-098 one — into this placeholder; the local repo doesn't carry the production URL value.)*
+**Live URL:** `https://https://team-098-dermassist-v1.up.railway.app` *(Chủ nhà fills the actual Railway-assigned subdomain — the team-098 one — into this placeholder; the local repo doesn't carry the production URL value.)*
 
 **Cold-start mitigation:** **Option A — always-warm replica** (Railway hobby plan, $5/month, `sleepApplication: false` in [railway.json](../railway.json)). Embedder warmup (~19 s, multilingual-e5-small) runs once in lifespan and stays in memory; `/healthz/ready` returns 200 immediately because warmup completes before HTTP starts. **Observed first-request latency** in production matches the eval p50 (~7.5 s); no warmup penalty observed since deploy. Documented in [deploy.md §3](deploy.md).
 
@@ -339,7 +339,7 @@ Single rolled-up table summarizing every PARTIAL / FAIL / DEFERRED row from §3 
 
 ## Section 8 — Closing recommendation
 
-**V1 ships as deployed at `https://<RAILWAY_URL>`.** The system fulfills 25 of 45 Blueprint requirements as full PASS, 11 as PARTIAL (with documented V2 deferrals), 7 as DEFERRED / NOT BUILT (all aligned with [Amendment §2](../../user_data/BLUEPRINT-AMENDMENT-001.md)), 2 as MEASURED-FAIL on eval targets (zoster sensitivity, tier accuracy — both V2 prompt-iteration tasks), and 1 as N/A (DATA-006 superseded by Amendment §3.1 Railway swap). All 8 Amendment §4 acceptance criteria are met to satisfaction-of-evaluator standard.
+**V1 ships as deployed at `https://https://team-098-dermassist-v1.up.railway.app`.** The system fulfills 25 of 45 Blueprint requirements as full PASS, 11 as PARTIAL (with documented V2 deferrals), 7 as DEFERRED / NOT BUILT (all aligned with [Amendment §2](../../user_data/BLUEPRINT-AMENDMENT-001.md)), 2 as MEASURED-FAIL on eval targets (zoster sensitivity, tier accuracy — both V2 prompt-iteration tasks), and 1 as N/A (DATA-006 superseded by Amendment §3.1 Railway swap). All 8 Amendment §4 acceptance criteria are met to satisfaction-of-evaluator standard.
 
 The deployed system serves real Vietnamese clinician traffic via Zalo organic, surfaces its own limitations (differential with confidence, OOD warnings, doctor finalize step), and ships with the methodology paper trail intact (47 commits, 14 canonical TIPs, 5 fixups, 1 cleanup, all reachable from `git log` with descriptive messages and Completion Reports).
 
