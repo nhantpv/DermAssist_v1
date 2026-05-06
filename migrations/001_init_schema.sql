@@ -115,6 +115,9 @@ CREATE TABLE IF NOT EXISTS audit_log (
 --   'output_validated', 'encounter_complete'
 --   'encounter_deleted', 'encounter_expired'
 --   'doctor_finalized'
+--   'chat_turn'             (added TIP-010 — follow-up Q&A in encounter)
+--   'image_dedup_hit'       (added TIP-011 — same-image second upload)
+--   'vlm_fallback_ood'      (added TIP-010 — model emitted FALLBACK template)
 
 CREATE INDEX IF NOT EXISTS idx_audit_encounter ON audit_log(encounter_id, ts);
 CREATE INDEX IF NOT EXISTS idx_audit_doctor    ON audit_log(doctor_id, ts);

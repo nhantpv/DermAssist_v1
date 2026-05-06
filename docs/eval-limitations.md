@@ -1,5 +1,10 @@
 # Eval Limitations — Distribution Shift Acknowledgment
 
+> **V1 metrics are NOT a clinical-validation result.** They demonstrate
+> the system functions end-to-end on labeled images and surface specific
+> failure modes (e.g., `atopic_dermatitis` 0% accuracy) that V2 prompt
+> and dataset work must address.
+
 The eval suite uses public dermatology datasets (Fitzpatrick17k, ISIC,
 DermNet NZ, etc.) which differ from the deployment environment in
 material ways:
