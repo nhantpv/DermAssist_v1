@@ -2,6 +2,9 @@
 # we pin python311 here to match the floor and keep wheel availability stable.
 # postgresql brings the libpq client (`psql`) needed by scripts/run_migrations.sh.
 
+[start]
+cmd = "/bin/bash scripts/start_production.sh"
+
 [phases.setup]
 nixPkgs = ["python311", "postgresql"]
 
