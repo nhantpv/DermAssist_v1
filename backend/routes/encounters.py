@@ -308,6 +308,56 @@ async def encounter_finalize(
     return RedirectResponse(url=f"/encounters/{encounter_id}", status_code=303)
 
 
+@router.post("/encounters/{encounter_id}/delete")
+async def encounter_delete(
+    encounter_id: UUID,
+    user: Annotated[CurrentUser, Depends(get_current_user)],
+    db: Annotated[AsyncSession, Depends(get_db)],
+):
+    """Soft-delete an encounter belonging to the current doctor.
+
+    Sets deleted_at = NOW(); does NOT remove the image file or audit
+    rows. Returns 404 (not 403) for missing/already-deleted/cross-
+    doctor rows so existence isn't probeable.
+    """
+    deleted = (
+        await db.execute(
+            text(
+                "UPDATE encounters "
+                "   SET deleted_at = NOW() "
+                " WHERE id = CAST(:eid AS uuid) "
+                "   AND doctor_id = CAST(:uid AS uuid) "
+                "   AND deleted_at IS NULL "
+                "RETURNING id::text AS id"
+            ),
+            {"eid": str(encounter_id), "uid": user["id"]},
+        )
+    ).first()
+    if deleted is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Encounter không tồn tại hoặc đã bị xoá.",
+        )
+    await db.commit()
+
+    await db.execute(
+        text(
+            "INSERT INTO audit_log "
+            "  (encounter_id, doctor_id, event_type, details) "
+            "VALUES (CAST(:eid AS uuid), CAST(:uid AS uuid), "
+            "        'encounter_deleted', CAST(:det AS jsonb))"
+        ),
+        {
+            "eid": str(encounter_id),
+            "uid": user["id"],
+            "det": '{"soft_delete": true}',
+        },
+    )
+    await db.commit()
+
+    return RedirectResponse(url="/encounters", status_code=303)
+
+
 @router.get("/uploads/{filename}")
 async def serve_upload(
     filename: str,

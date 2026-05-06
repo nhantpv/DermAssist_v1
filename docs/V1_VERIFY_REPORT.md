@@ -115,7 +115,7 @@ Every REQ-ID from [BLUEPRINT.md §6](../../user_data/BLUEPRINT.md) below. Status
 | REQ-FUNC-009 | Result page shows primary dx, confidence, differential, key features, tier, red flags, citations | ✅ PASS | [`encounter_result.html:76-142`](../backend/templates/encounter_result.html) | All seven elements rendered |
 | REQ-FUNC-010 | Doctor can enter `doctor_final_dx`, `doctor_final_tier`, `doctor_notes` after AI result | ✅ PASS | [`encounters.py:258-294`](../backend/routes/encounters.py#L258-L294) `POST /encounters/{id}/finalize`; UI form `encounter_result.html:165-188` | Risk E |
 | REQ-FUNC-011 | View encounter history (own only) | ✅ PASS | [`encounters.py:72-91`](../backend/routes/encounters.py#L72-L91) `GET /encounters` scoped by `doctor_id`; [`tests/integration/test_security.py::test_uploads_404s_for_other_doctors_image`](../tests/integration/test_security.py) covers cross-user isolation; [V1_SECURITY_AUDIT.md](V1_SECURITY_AUDIT.md) audits all 12 SQL queries | LIMIT 50 (no pagination) |
-| REQ-FUNC-012 | Manual encounter delete (cascade to image + audit) | ❌ DEFERRED | No `DELETE` route; `deleted_at` column exists but unused. Amendment §2 deferral | V2: 1 day |
+| REQ-FUNC-012 | Manual encounter delete (soft-delete only) | 🟡 PARTIAL | [`encounters.py::encounter_delete`](../backend/routes/encounters.py) `POST /encounters/{id}/delete` sets `deleted_at = NOW()` and writes an `encounter_deleted` audit row; UI button in `encounter_result.html`. Image file + audit rows preserved. | TIP-V1-POLISH-2 shipped soft-delete; V2 still needs hard-delete (image + audit cascade) and auto-delete cron |
 | REQ-FUNC-013 | Demo seeded + rate-limited 10 rpm | 🟡 PARTIAL | [`migrations/002_seed_demo_user.sql`](../migrations/002_seed_demo_user.sql) seeds demo with `rate_limit_rpm=10`; column read into auth context ([`auth.py:24`](../backend/auth.py#L24)); **no enforcement code anywhere** | Path A risk: public app + OpenAI cost exposure if abused. Mitigated by OpenAI hard-limit. V2: 4 hours. |
 
 ### 3.3 DATA (6 REQs)
@@ -165,8 +165,8 @@ Every REQ-ID from [BLUEPRINT.md §6](../../user_data/BLUEPRINT.md) below. Status
 | Status | Count |
 |---|---|
 | ✅ PASS | 25 |
-| 🟡 PARTIAL | 11 |
-| ❌ DEFERRED / NOT BUILT | 7 |
+| 🟡 PARTIAL | 12 |
+| ❌ DEFERRED / NOT BUILT | 6 |
 | ❌ MEASURED FAIL | 2 (REQ-EVAL-001 zoster, REQ-EVAL-002 tier) |
 | 🛇 N/A (superseded) | 1 |
 | **Total** | **45** |
@@ -317,7 +317,7 @@ Single rolled-up table summarizing every PARTIAL / FAIL / DEFERRED row from §3 
 | Eval | Tier-accuracy prompt iteration | REQ-EVAL-002 | TIP-012 finding | bundled with zoster iteration |
 | Eval | CI-gated eval w/ regression-block | REQ-EVAL-004 | Amendment §2 | 1 day |
 | Ops | 90-day expiry cron / scheduled job | REQ-DATA-001 | SCHEMA_CURRENT.md gaps + Amendment §2 | 4 hours |
-| Ops | Encounter delete UI + handler | REQ-FUNC-012 | Amendment §2 | 1 day |
+| Ops | Encounter hard-delete + auto-delete cron | REQ-FUNC-012 / REQ-DATA-001 | TIP-V1-POLISH-2 shipped soft-delete; V2 needs hard delete + scheduled cleanup | 2-3 days |
 | Ops | Real CSRF middleware | (Security audit §3) | Amendment §2 | 2 days |
 | Ops | Multi-worker / horizontal scale | REQ-NFR-004 | Amendment §2 (>10 concurrent) | 2 days |
 | Ops | Structured JSON logs + trace_id | REQ-OPS-001 | Amendment §2 | 4 hours |
@@ -339,7 +339,7 @@ Single rolled-up table summarizing every PARTIAL / FAIL / DEFERRED row from §3 
 
 ## Section 8 — Closing recommendation
 
-**V1 ships as deployed at `https://https://team-098-dermassist-v1.up.railway.app`.** The system fulfills 25 of 45 Blueprint requirements as full PASS, 11 as PARTIAL (with documented V2 deferrals), 7 as DEFERRED / NOT BUILT (all aligned with [Amendment §2](../../user_data/BLUEPRINT-AMENDMENT-001.md)), 2 as MEASURED-FAIL on eval targets (zoster sensitivity, tier accuracy — both V2 prompt-iteration tasks), and 1 as N/A (DATA-006 superseded by Amendment §3.1 Railway swap). All 8 Amendment §4 acceptance criteria are met to satisfaction-of-evaluator standard.
+**V1 ships as deployed at `https://https://team-098-dermassist-v1.up.railway.app`.** The system fulfills 25 of 45 Blueprint requirements as full PASS, 12 as PARTIAL (with documented V2 deferrals), 6 as DEFERRED / NOT BUILT (all aligned with [Amendment §2](../../user_data/BLUEPRINT-AMENDMENT-001.md)), 2 as MEASURED-FAIL on eval targets (zoster sensitivity, tier accuracy — both V2 prompt-iteration tasks), and 1 as N/A (DATA-006 superseded by Amendment §3.1 Railway swap). All 8 Amendment §4 acceptance criteria are met to satisfaction-of-evaluator standard.
 
 The deployed system serves real Vietnamese clinician traffic via Zalo organic, surfaces its own limitations (differential with confidence, OOD warnings, doctor finalize step), and ships with the methodology paper trail intact (47 commits, 14 canonical TIPs, 5 fixups, 1 cleanup, all reachable from `git log` with descriptive messages and Completion Reports).
 

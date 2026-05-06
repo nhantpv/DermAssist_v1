@@ -4,9 +4,18 @@
 {% block content %}
 {% set d = record.diagnosis %}
 
-<div class="flex items-center justify-between mb-4">
+<div class="flex items-center justify-between mb-4 gap-3">
     <a href="/encounters" class="text-sm text-slate-600 hover:text-blue-700">← Quay lại lịch sử</a>
-    <span class="text-xs text-slate-500">Encounter #{{ record.id_short }} • {{ record.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+    <div class="flex items-center gap-3">
+        <span class="text-xs text-slate-500">Encounter #{{ record.id_short }} • {{ record.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+        <form action="/encounters/{{ record.id }}/delete" method="post" class="inline"
+              onsubmit="return confirm('Bạn chắc chắn muốn xoá encounter này? Hành động không thể hoàn tác.');">
+            <button type="submit"
+                    class="text-sm text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded">
+                🗑 Xoá
+            </button>
+        </form>
+    </div>
 </div>
 
 {% if d.get('_stub') %}
