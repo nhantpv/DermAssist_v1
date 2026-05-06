@@ -101,9 +101,12 @@ async def test_login_with_bad_password_returns_vietnamese_error(
         follow_redirects=False,
     )
     assert resp.status_code == 401
-    body = resp.json()
-    assert body["status_code"] == 401
-    assert body["error"] == "Sai tên đăng nhập hoặc mật khẩu."
+    assert "text/html" in resp.headers.get("content-type", "")
+    # Error banner + login form re-rendered
+    assert "Sai tên đăng nhập hoặc mật khẩu." in resp.text
+    assert 'action="/auth/login"' in resp.text
+    # Username preserved, password not
+    assert 'value="demo"' in resp.text
 
 
 async def test_login_with_unknown_username_returns_401(client: httpx.AsyncClient):

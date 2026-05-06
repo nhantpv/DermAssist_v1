@@ -4,7 +4,7 @@
 from typing import Annotated
 from urllib.parse import urlencode
 
-from fastapi import APIRouter, Depends, Form, HTTPException, status
+from fastapi import APIRouter, Depends, Form, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,11 +28,17 @@ _settings = get_settings()
 
 @router.post("/auth/login")
 async def login_local(
+    request: Request,
     db: Annotated[AsyncSession, Depends(get_db)],
     username: str = Form(...),
     password: str = Form(...),
 ):
-    """Local login (demo/demo, evaluator fallback)."""
+    """Local login (demo/demo, evaluator fallback).
+
+    On failure, re-renders the login template with a Vietnamese error
+    banner (status 401 + HTML body), instead of letting the global
+    JSON exception handler render a raw error page.
+    """
     row = (
         await db.execute(
             text(
@@ -44,9 +50,17 @@ async def login_local(
     ).mappings().first()
 
     if row is None or not verify_password(password, row["password_hash"]):
-        raise HTTPException(
+        templates = request.app.state.templates
+        return templates.TemplateResponse(
+            request,
+            "login.html",
+            {
+                "error_message": "Sai tên đăng nhập hoặc mật khẩu.",
+                "username_value": username,
+                "google_oauth_enabled": _settings.google_oauth_enabled,
+                "flash": None,
+            },
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Sai tên đăng nhập hoặc mật khẩu.",
         )
 
     # Best-effort last_login update
