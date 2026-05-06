@@ -15,12 +15,14 @@
         <!-- LEFT: Image upload -->
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 sm:p-6">
             <h2 class="text-sm font-semibold uppercase tracking-wide text-slate-500 mb-3">Ảnh tổn thương</h2>
-            <input type="file" id="image" name="image" accept="image/jpeg,image/png,image/webp" required
-                   onchange="previewImage(this)"
-                   class="w-full text-sm text-slate-700
-                          file:mr-3 file:py-2 file:px-4 file:rounded-md file:border-0
-                          file:bg-blue-50 file:text-blue-700 file:font-medium
-                          hover:file:bg-blue-100 file:cursor-pointer">
+            <div class="file-upload-wrap">
+                <input type="file" id="image" name="image" accept="image/jpeg,image/png,image/webp" required
+                       onchange="previewImage(this)"
+                       class="text-sm text-slate-700
+                              file:mr-3 file:py-2 file:px-4 file:rounded-md file:border-0
+                              file:bg-blue-50 file:text-blue-700 file:font-medium
+                              hover:file:bg-blue-100 file:cursor-pointer">
+            </div>
             <p class="text-xs text-slate-500 mt-2">JPG / PNG / WebP, tối đa 8 MB.</p>
 
             <div id="preview-wrap" class="mt-4 hidden">
@@ -130,5 +132,59 @@ document.querySelector('form').addEventListener('submit', function() {
     btn.disabled = true;
     btn.textContent = 'Đang phân tích — có thể mất 5–10 giây…';
 });
+
+// Persist form fields to sessionStorage so accidental reload doesn't lose work.
+// Caveats:
+//   - File input intentionally NOT persisted (browser security forbids).
+//   - sessionStorage is per-tab; form survives reload but not new tab.
+(function () {
+    const FORM_KEY = 'dermassist_encounter_form_v1';
+    const FIELDS = ['age_years', 'sex', 'symptom_duration_days',
+                    'prior_treatments', 'relevant_history', 'clinical_note'];
+
+    try {
+        const saved = sessionStorage.getItem(FORM_KEY);
+        if (saved) {
+            const data = JSON.parse(saved);
+            FIELDS.forEach(name => {
+                const el = document.getElementById(name);
+                if (el && data[name] !== undefined && data[name] !== null) {
+                    el.value = data[name];
+                }
+            });
+        }
+    } catch (e) { /* ignore parse errors */ }
+
+    let saveTimer;
+    function save() {
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(() => {
+            const data = {};
+            FIELDS.forEach(name => {
+                const el = document.getElementById(name);
+                if (el) data[name] = el.value;
+            });
+            try {
+                sessionStorage.setItem(FORM_KEY, JSON.stringify(data));
+            } catch (e) { /* quota or disabled */ }
+        }, 300);
+    }
+    FIELDS.forEach(name => {
+        const el = document.getElementById(name);
+        if (el) {
+            el.addEventListener('input', save);
+            el.addEventListener('change', save);
+        }
+    });
+
+    const form = document.querySelector('form[action="/encounters/create"]');
+    if (form) {
+        form.addEventListener('submit', () => {
+            try {
+                sessionStorage.removeItem(FORM_KEY);
+            } catch (e) { /* ignore */ }
+        });
+    }
+})();
 </script>
 {% endblock %}

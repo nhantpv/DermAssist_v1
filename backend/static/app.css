@@ -14,3 +14,16 @@
 @media (max-width: 640px) {
     label > input[type="radio"] { min-width: 1.25rem; min-height: 1.25rem; }
 }
+
+/* Constrain file-input click area to the visible button + filename */
+input[type="file"] {
+    display: inline-block;
+    max-width: 100%;
+}
+
+/* Tighter wrapper for the file input row */
+.file-upload-wrap {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
