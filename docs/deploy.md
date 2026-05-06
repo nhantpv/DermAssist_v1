@@ -270,3 +270,69 @@ Postgres data via Railway's **Backups** tab.
 | Container restarts every few minutes | `restartPolicyType: ON_FAILURE` is doing its job because the app is crashing on startup. Tail Railway logs for the actual error; usually a missing env var. |
 | Cold-start latency > 30s | Either the embedder genuinely takes that long on the assigned hardware, or you're not on Option A and the container slept. Check `railway.json` has `"sleepApplication": false`. |
 | Demo account login broken in prod | Migrations 002 (demo seed) didn't run. Check deploy logs for migration output; manually re-run via Railway → Postgres → **Connect** → run `migrations/002_seed_demo_user.sql`. |
+
+## 9. Publishing the Google OAuth app
+
+While the OAuth consent screen is in **Testing** status, only Google
+accounts on the explicit test-user list can sign in. Anyone else
+hits "Access blocked: this app has not completed the Google verification
+process." For the closed beta we want any Vietnamese clinician with a
+Google account to be able to log in, so the consent screen has to be
+**Published**.
+
+### Procedure (Chủ nhà executes — manual, NOT done by Thợ)
+
+1. Open Google Cloud Console → **APIs & Services** → **OAuth consent
+   screen**.
+2. Status reads **Testing**. Click **Publish app**.
+3. Confirm the dialog.
+
+That's it — no review submission required for "external/unverified"
+apps. Within ~1 minute the consent screen accepts arbitrary Google
+accounts.
+
+### What users will see
+
+Because the app has not been verified by Google (verification is a
+separate, weeks-long review the project does not currently need), the
+consent screen shows an interstitial:
+
+> **Google hasn't verified this app**
+> The app is requesting access to sensitive info in your Google
+> Account. Until the developer (…) verifies this app with Google, you
+> shouldn't use it.
+
+Below that warning is a small **Advanced** link. After clicking it:
+
+> **Go to DermAssist VN (unsafe)**
+
+Tapping that link proceeds to the normal consent screen and then back
+into DermAssist VN. The "(unsafe)" copy is alarming but normal for any
+unverified OAuth app — it does not mean the app is actually unsafe.
+
+### Vietnamese explanation (paste into the README / Zalo intro)
+
+> Đây là dự án nghiên cứu — Google chưa xác minh app, bạn có thể click
+> "Advanced" → "Tiếp tục" (hoặc "Go to DermAssist VN (unsafe)") để
+> đăng nhập. App chỉ yêu cầu thông tin tài khoản cơ bản.
+
+### One-way warning
+
+Publishing is **one-way**. The OAuth consent screen does not have a
+"go back to Testing" button. If the project later needs to lock the
+app down to a test-user list again, the only path is to delete the
+OAuth client and create a new one — which invalidates every existing
+session and forces all current users to re-authorize.
+
+If "Published" status causes any policy issue (e.g., volume of users
+exceeds free quota, or a real verification request becomes necessary),
+plan that work before clicking. For the V1 closed beta the trade-off
+is acceptable: a few hundred clinicians at most over the demo window.
+
+### Optional: full app verification (V2 work)
+
+The "Google hasn't verified this app" interstitial disappears only
+after Google verifies the app, which takes **1–2 weeks** of back-and-
+forth (privacy policy URL, brand verification, scopes justification).
+This is V2 work — flagged for the next round of polish but not
+required for the closed beta.

@@ -39,6 +39,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.auth import CurrentUser, get_current_user
+from backend.citations import enrich_citations
 from backend.db import get_db
 from backend.orchestrator import run_encounter
 
@@ -245,7 +246,22 @@ async def encounter_detail(
     ).mappings().all()
 
     record = _row_to_record(dict(row))
-    record["chat_messages"] = [dict(m) for m in chat_rows]
+    chat_messages = [dict(m) for m in chat_rows]
+
+    # Enrich each assistant message's citations once so the template
+    # can render friendly doc names instead of bare UUIDs.
+    all_ids: list[str] = []
+    for m in chat_messages:
+        for cid in (m.get("citations") or []):
+            if cid not in all_ids:
+                all_ids.append(cid)
+    enriched_all = await enrich_citations(db, all_ids)
+    by_id = {e["chunk_id"]: e for e in enriched_all}
+    for m in chat_messages:
+        m["enriched_citations"] = [
+            by_id[cid] for cid in (m.get("citations") or []) if cid in by_id
+        ]
+    record["chat_messages"] = chat_messages
 
     templates = request.app.state.templates
     return templates.TemplateResponse(

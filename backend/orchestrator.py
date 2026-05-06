@@ -23,6 +23,7 @@ from typing import Any
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend.citations import enrich_citations
 from backend.preflight import check_image
 from backend.retrieval import Chunk, retrieve
 from backend.schemas import DiagnosisOutput, compute_final_ood
@@ -352,10 +353,14 @@ async def run_encounter(
         )
         diagnosis = DiagnosisOutput.model_validate(_FALLBACK_OUTPUT)
         result_json = diagnosis.model_dump()
+        result_json["enriched_citations"] = []
     else:
         # 9) Sanitize success
         diagnosis, fallback_echo = _sanitize_diagnosis(diagnosis)
         result_json = diagnosis.model_dump()
+        result_json["enriched_citations"] = await enrich_citations(
+            db, list(diagnosis.citations)
+        )
 
         out_sha = hashlib.sha256(
             json.dumps(result_json, sort_keys=True, ensure_ascii=False).encode("utf-8")

@@ -24,6 +24,7 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.auth import CurrentUser, get_current_user
+from backend.citations import enrich_citations
 from backend.db import get_db
 from backend.orchestrator import _audit
 from backend.retrieval import retrieve
@@ -121,6 +122,8 @@ async def chat_message(
         await db.commit()
         return HTMLResponse(_render_pair(message, fallback_text, []))
 
+    enriched = await enrich_citations(db, chat_resp.citations)
+
     # 6) Persist assistant turn
     await db.execute(
         text(
@@ -152,20 +155,27 @@ async def chat_message(
     )
 
     # 8) Render fragment for HTMX
-    return HTMLResponse(_render_pair(message, chat_resp.content, chat_resp.citations))
+    return HTMLResponse(_render_pair(message, chat_resp.content, enriched))
 
 
-def _render_pair(user_msg: str, assistant_msg: str, citations: list[str]) -> str:
-    """Build the two-bubble HTML fragment HTMX swaps into #chat-messages."""
+def _render_pair(
+    user_msg: str, assistant_msg: str, enriched_citations: list[dict]
+) -> str:
+    """Build the two-bubble HTML fragment HTMX swaps into #chat-messages.
+
+    The assistant bubble is marked with data-markdown="true"; client JS
+    runs marked.parse() over its textContent on htmx:afterSwap. Citations
+    live in a sibling div so they survive the innerHTML replacement.
+    """
     safe_user = escape(user_msg)
     safe_assistant = escape(assistant_msg)
     cite_html = ""
-    if citations:
+    if enriched_citations:
         cite_items = " ".join(
-            f'<span class="text-xs text-slate-500 mr-1">[{escape(c[:8])}…]</span>'
-            for c in citations
+            f'<span class="text-xs text-slate-500 mr-2">📄 {escape(c["doc_name"])}</span>'
+            for c in enriched_citations
         )
-        cite_html = f'<div class="mt-1">{cite_items}</div>'
+        cite_html = f'<div class="flex pl-1 mt-1">{cite_items}</div>'
     return (
         '<div class="flex justify-end">'
         '<div class="max-w-[85%] px-4 py-2 rounded-lg text-sm '
@@ -174,8 +184,9 @@ def _render_pair(user_msg: str, assistant_msg: str, citations: list[str]) -> str
         "</div></div>"
         '<div class="flex">'
         '<div class="max-w-[85%] px-4 py-2 rounded-lg text-sm '
-        'bg-slate-100 text-slate-800">'
-        f'<div class="whitespace-pre-wrap">{safe_assistant}</div>'
-        f"{cite_html}"
+        'bg-slate-100 text-slate-800 prose prose-sm max-w-none" '
+        'data-markdown="true">'
+        f"{safe_assistant}"
         "</div></div>"
+        f"{cite_html}"
     )

@@ -25,12 +25,19 @@ logger = logging.getLogger(__name__)
 
 _TIMEOUT = httpx.Timeout(60.0)
 _CHUNK_MARKER_RE = re.compile(r"\[chunk:([a-f0-9-]+)\]")
+_CHUNK_MARKER_STRIP_RE = re.compile(r"\s*\[chunk:[a-f0-9\-]+\]\s*")
+
+
+def strip_chunk_markers(text: str) -> str:
+    """Remove [chunk:UUID] tokens from visible text. Preserves a single
+    space where the marker had been so adjacent words don't collide."""
+    return _CHUNK_MARKER_STRIP_RE.sub(" ", text).strip()
 
 
 @dataclass(frozen=True)
 class ChatResponse:
-    content: str               # raw assistant text (markers preserved)
-    citations: list[str]       # extracted chunk_ids that appear in content
+    content: str               # visible text (chunk markers stripped)
+    citations: list[str]       # extracted chunk_ids that appeared in raw text
     latency_ms: int
     chunks_used: list[str]     # input chunk_ids passed to the model
 
@@ -108,16 +115,17 @@ async def chat_followup(
         payload = resp.json()
     latency_ms = int((time.monotonic() - t0) * 1000)
 
-    content = (payload["choices"][0]["message"]["content"] or "").strip()
-    if not content:
+    raw_content = (payload["choices"][0]["message"]["content"] or "").strip()
+    if not raw_content:
         logger.warning("chat_followup got empty content from VLM")
-        content = "(Không có phản hồi.)"
+        raw_content = "(Không có phản hồi.)"
 
     allowed = {c.chunk_id for c in rag_chunks}
-    citations = _extract_citations(content, allowed)
+    citations = _extract_citations(raw_content, allowed)
+    visible = strip_chunk_markers(raw_content)
 
     return ChatResponse(
-        content=content,
+        content=visible,
         citations=citations,
         latency_ms=latency_ms,
         chunks_used=[c.chunk_id for c in rag_chunks],

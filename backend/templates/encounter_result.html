@@ -122,16 +122,23 @@
         </div>
         {% endif %}
 
-        {% if d.citations %}
+        {% set cites = d.get('enriched_citations') or d.get('citations') or [] %}
+        {% if cites %}
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5 sm:p-6">
-            <h3 class="text-xs uppercase tracking-wide text-slate-500 mb-3">Trích dẫn</h3>
-            <ul class="text-sm text-slate-700 space-y-1">
-                {% for c in d.citations %}
-                    {% if c is mapping %}
-                        <li>🔗 <code class="bg-slate-100 px-1.5 py-0.5 rounded text-xs">{{ c.chunk_id }}</code> {{ c.title or '' }}</li>
-                    {% else %}
-                        <li>🔗 <code class="bg-slate-100 px-1.5 py-0.5 rounded text-xs">{{ c }}</code></li>
-                    {% endif %}
+            <h3 class="text-xs uppercase tracking-wide text-slate-500 mb-3">Tài liệu tham khảo</h3>
+            <ul class="text-sm text-slate-700 space-y-2">
+                {% for c in cites %}
+                <li class="flex items-start gap-2">
+                    <span aria-hidden="true">📄</span>
+                    <div>
+                        <div class="font-medium text-slate-800">
+                            {% if c is mapping %}{{ c.doc_name }}{% else %}{{ c }}{% endif %}
+                        </div>
+                        {% if c is mapping and c.section and c.section != '—' %}
+                        <div class="text-xs text-slate-500">{{ c.section }}</div>
+                        {% endif %}
+                    </div>
+                </li>
                 {% endfor %}
             </ul>
         </div>
@@ -141,13 +148,21 @@
             <h3 class="text-xs uppercase tracking-wide text-slate-500 mb-3">Hỏi tiếp về chẩn đoán này</h3>
             <div id="chat-messages" class="space-y-3 mb-4 max-h-80 overflow-y-auto">
                 {% for msg in record.chat_messages %}
-                <div class="flex {% if msg.role == 'user' %}justify-end{% endif %}">
-                    <div class="max-w-[85%] px-4 py-2 rounded-lg text-sm
-                        {% if msg.role == 'user' %}bg-blue-50 text-blue-900{% else %}bg-slate-100 text-slate-800{% endif %}">
-                        {{ msg.content }}
-                        {% if msg.citations %}<div class="text-xs text-slate-500 mt-1">📎 {{ msg.citations|join(', ') }}</div>{% endif %}
-                    </div>
+                {% if msg.role == 'user' %}
+                <div class="flex justify-end">
+                    <div class="max-w-[85%] px-4 py-2 rounded-lg text-sm bg-blue-50 text-blue-900">{{ msg.content }}</div>
                 </div>
+                {% else %}
+                <div class="flex">
+                    <div class="max-w-[85%] px-4 py-2 rounded-lg text-sm bg-slate-100 text-slate-800 prose prose-sm max-w-none"
+                         data-markdown="true">{{ msg.content }}</div>
+                </div>
+                {% if msg.enriched_citations %}
+                <div class="flex pl-1 mt-1">
+                    {% for c in msg.enriched_citations %}<span class="text-xs text-slate-500 mr-2">📄 {{ c.doc_name }}</span>{% endfor %}
+                </div>
+                {% endif %}
+                {% endif %}
                 {% else %}
                 <p class="text-xs text-slate-400 italic">Chưa có hội thoại — hỏi bên dưới để bắt đầu.</p>
                 {% endfor %}
@@ -200,4 +215,28 @@
     </section>
 </div>
 {% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/marked@13.0.2/marked.min.js"
+        integrity="sha384-jJWlCM+rFWSQruX9AsLlEfjF73FlUiTSl2t1tnq+EZPHdFHIoUBmX0mlKgDocb9G"
+        crossorigin="anonymous"></script>
+<script>
+(function () {
+    function renderIn(root) {
+        if (typeof marked === 'undefined') return;
+        root.querySelectorAll('[data-markdown="true"]').forEach(el => {
+            if (el.dataset.rendered === 'true') return;
+            el.innerHTML = marked.parse(el.textContent, { breaks: true });
+            el.dataset.rendered = 'true';
+        });
+    }
+    // Render assistant bubbles already on the page.
+    renderIn(document);
+    // Render newly-appended bubbles after each HTMX swap.
+    document.body.addEventListener('htmx:afterSwap', (evt) => {
+        renderIn(evt.detail.target);
+    });
+})();
+</script>
 {% endblock %}
